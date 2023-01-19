@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import os
+import sys
 
 
 # Model
@@ -90,6 +92,8 @@ def plot_data(X: np.array, Y: np.array, theta0: float, theta1: float, x: np.arra
 
 
 def main():
+    assert os.path.exists('data.csv'), sys.exit(
+        'Please download data.csv from intra and place it in the same directory as this script')
     # Read dataset from csv file
     data = pd.read_csv('data.csv')
     X = normalize_array(data['km'].values)

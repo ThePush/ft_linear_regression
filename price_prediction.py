@@ -1,19 +1,22 @@
+import os
 import sys
 
 
 def main():
-    user_input = input('Enter a kilometer value: ')
-    if not user_input.isdigit() or int(user_input) < 0:
+    x = input('Enter a kilometer value: ')
+    if not x.isdigit() or int(x) < 0:
         print('Invalid input, please enter a positive integer')
         sys.exit(1)
 
+    theta0, theta1 = .0, .0
     # Load the theta values from the file
-    with open('theta.csv', 'r') as f:
-        theta0, theta1 = f.read().split(',')
-        theta0 = float(theta0)
-        theta1 = float(theta1)
+    if os.path.exists('theta.csv'):
+        with open('theta.csv', 'r') as f:
+            theta0, theta1 = f.read().split(',')
+            theta0 = float(theta0)
+            theta1 = float(theta1)
 
-    price = theta0 + theta1 * float(user_input)
+    price = theta0 + theta1 * float(x)
     print(f'Predicted price: {price}')
 
 
