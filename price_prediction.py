@@ -5,9 +5,9 @@ import sys
 def main():
     '''Main function'''
     x = input('Enter a kilometer value: ')
-    if not x.isdigit() or int(x) < 0:
-        print('Invalid input, please enter a positive integer')
-        sys.exit(1)
+    assert x, sys.exit('Please enter a kilometer value')
+    assert x.isnumeric() and float(x) >= 0, sys.exit(
+        'Please enter a valid kilometer value')
 
     # Initialize theta0 and theta1 that will be used to predict the price
     theta0, theta1 = .0, .0

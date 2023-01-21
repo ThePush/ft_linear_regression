@@ -126,7 +126,6 @@ def plot_data(
     ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh, cmap='coolwarm', alpha=0.5)
     ax.scatter([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, s=1, color='purple', alpha=1)
     ax.plot([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, color='purple', alpha=1)
-
     plt.show()
 
 
