@@ -1,14 +1,14 @@
-## Linear Regression: Predicting the price of a car given its mileage
+## Linear Regression: Predicting the price of a car given its kilometerage
 
 
-![image](https://user-images.githubusercontent.com/91064070/213866654-ddbf8fb0-f0d9-48c2-b368-c1c99b5ce754.png)
+![image](https://user-images.githubusercontent.com/91064070/213888620-6b488e8f-0164-4655-a442-af6fe28b1bb3.png)
 
 ![image](https://user-images.githubusercontent.com/91064070/213887705-0a1ac769-e042-4d45-a0c6-717af65efeea.png)
 
 
 ## Usage:
 
-1/ To generate the model:
+1/ To generate the model and plot the results:
 ```shell
 $> python3 model.py
 ```

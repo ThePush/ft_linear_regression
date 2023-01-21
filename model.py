@@ -65,7 +65,7 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
             break
     print(f'Number of epochs: {number_of_epochs}')
     print(f'Final cost: {costs[-1]}')
-    return theta0, theta1, costs, mse, thetas_history
+    return theta0, theta1, costs, thetas_history
 
 
 def normalize_array(X: np.array) -> np.array:
@@ -87,7 +87,7 @@ def plot_data(
         costs: list, thetas_history: list):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     # Plot raw data
-    axes[0].set_title('Car price by mileage')
+    axes[0].set_title('Car price vs kilometers')
     axes[0].scatter(x, y)
     axes[0].set_xlabel('km')
     axes[0].set_ylabel('price')
@@ -98,7 +98,7 @@ def plot_data(
     axes[1].set_ylabel('price')
     axes[1].plot(X, [predict(theta0, theta1, x_i) for x_i in X], color='red')
     # Plot cost
-    axes[2].set_title('Cost')
+    axes[2].set_title('Cost evolution')
     axes[2].plot(costs)
     axes[2].set_xlabel('Epoch')
     axes[2].set_ylabel('Cost')
@@ -158,7 +158,7 @@ def main():
     theta.append(.0)
     theta.append(.0)
     # Perform gradient descent
-    theta[0], theta[1], costs, mse, thetas_history = gradient_descent(
+    theta[0], theta[1], costs, thetas_history = gradient_descent(
         theta[0], theta[1], X, Y)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
