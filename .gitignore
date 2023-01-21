@@ -1,2 +1,4 @@
 *.pdf
 *pycache*
+*.pyc
+theta.csv
