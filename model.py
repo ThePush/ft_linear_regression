@@ -27,11 +27,6 @@ def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
     return sum_of_squared_errors(theta0, theta1, X, Y) / (2 * len(X))
 
 
-def mean_squared_error(theta0: float, theta1: float, X: list, Y: list) -> float:
-    '''Mean squared error between predicted and actual values'''
-    return sum_of_squared_errors(theta0, theta1, X, Y) / len(X)
-
-
 def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
     '''Update theta0 and theta1 using gradient descent algorithm'''
     # Number of maximum iterations to perform gradient descent
@@ -46,8 +41,8 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
     for _ in range(num_epochs):
         # Store values for plotting
         thetas_history.append((theta0, theta1))
-        mse.append(mean_squared_error(theta0, theta1, X, Y))
         costs.append(cost(theta0, theta1, X, Y))
+
         # Calculate the gradient for theta0 and theta1
         # The gradient is the partial derivative of the sum of squared errors
         gradient0 = sum(2 * error(theta0, theta1, x_i, y_i)
@@ -88,7 +83,7 @@ def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) ->
 
 def plot_data(
         X: np.array, Y: np.array, theta0: float, theta1: float, x: np.array, y: np.array,
-        costs: list, mse: list, thetas_history: list):
+        costs: list, thetas_history: list):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     # Plot raw data
     axes[0].set_title('Car price by mileage')
@@ -106,15 +101,31 @@ def plot_data(
     axes[2].plot(costs)
     axes[2].set_xlabel('Epoch')
     axes[2].set_ylabel('Cost')
-    # Plot mean squared error in 3D
+    # Plot gradient descent with thetas and cost function as surface
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_title('Mean squared error')
+    ax.set_title('Gradient descent visualization')
     ax.set_xlabel('theta0')
     ax.set_ylabel('theta1')
-    ax.set_zlabel('Mean squared error')
-    ax.scatter([theta[0] for theta in thetas_history],
-               [theta[1] for theta in thetas_history], mse)
+    ax.set_zlabel('Cost')
+    # Find the range of theta0 and theta1 values that the theta descent path covers
+    theta0_min, theta0_max = min([x[0] for x in thetas_history])-.2, max([x[0] for x in thetas_history])+.2
+    theta1_min, theta1_max = min([x[1] for x in thetas_history])-.2, max([x[1] for x in thetas_history])+.2
+    # Create a smaller meshgrid for the surface plot
+    theta0_vals = np.linspace(theta0_min, theta0_max, 100)
+    theta1_vals = np.linspace(theta1_min, theta1_max, 100)
+    theta0_mesh, theta1_mesh = np.meshgrid(theta0_vals, theta1_vals)
+    # Compute the cost function for each pair of theta0 and theta1 values
+    cost_mesh = np.zeros_like(theta0_mesh)
+    for i in range(theta0_mesh.shape[0]):
+        for j in range(theta0_mesh.shape[1]):
+            theta = np.array([theta0_mesh[i, j], theta1_mesh[i, j]])
+            cost_mesh[i, j] = cost(theta[0], theta[1], X, Y)
+    # Plot the cost function surface
+    ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh, cmap='coolwarm', alpha=0.5)
+    ax.scatter([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, s=1, color='purple', alpha=1)
+    ax.plot([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, color='purple', alpha=1)
+
     plt.show()
 
 
@@ -150,7 +161,7 @@ def main():
         theta[0], theta[1], X, Y)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
-              data['km'].values, data['price'].values, costs, mse, thetas_history)
+              data['km'].values, data['price'].values, costs, thetas_history)
 
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
