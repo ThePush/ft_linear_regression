@@ -37,7 +37,8 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
     number_of_epochs = 0
     thetas_history = []
     costs = []
-    mse = []
+
+    # Core of the gradient descent algorithm
     for _ in range(num_epochs):
         # Store values for plotting
         thetas_history.append((theta0, theta1))
