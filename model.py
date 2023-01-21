@@ -49,6 +49,7 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
         mse.append(mean_squared_error(theta0, theta1, X, Y))
         costs.append(cost(theta0, theta1, X, Y))
         # Calculate the gradient for theta0 and theta1
+        # The gradient is the partial derivative of the sum of squared errors
         gradient0 = sum(2 * error(theta0, theta1, x_i, y_i)
                         for x_i, y_i in zip(X, Y))
         gradient1 = sum(2 * error(theta0, theta1, x_i, y_i) * x_i

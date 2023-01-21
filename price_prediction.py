@@ -8,6 +8,7 @@ def main():
         print('Invalid input, please enter a positive integer')
         sys.exit(1)
 
+    # Initialize theta0 and theta1 that will be used to predict the price
     theta0, theta1 = .0, .0
     # Load the theta values from the file
     if os.path.exists('theta.csv'):
@@ -16,6 +17,7 @@ def main():
             theta0 = float(theta0)
             theta1 = float(theta1)
 
+    # Linear function type: y = ax + b
     price = theta0 + theta1 * float(x)
     print(f'Predicted price: {price}')
 
