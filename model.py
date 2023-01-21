@@ -68,6 +68,7 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
                  abs(costs[-2] - costs[-1]) < 0.000001))):
             break
     print(f'Number of epochs: {number_of_epochs}')
+    print(f'Final cost: {costs[-1]}')
     return theta0, theta1, costs, mse, thetas_history
 
 
@@ -140,8 +141,7 @@ def main():
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
         theta[0], theta[1], data['km'].values, data['price'].values)
-    # Print final values for theta0 and theta1 and cost
-    print(f'Cost: {cost(theta[0], theta[1], X, Y)}')
+    # Print final values for theta0 and theta1
     print(f'theta0: {theta[0]}')
     print(f'theta1: {theta[1]}')
     # Write theta0 and theta1 to csv file

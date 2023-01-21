@@ -9,7 +9,7 @@
 ## Usage:
 
 1/ To generate the model:
-```python
+```shell
 $> python3 model.py
 ```
 Output with training on current dataset:
@@ -17,7 +17,7 @@ Output with training on current dataset:
 ![image](https://user-images.githubusercontent.com/91064070/213880936-5089c289-01ee-4bb9-9226-32f850f92318.png)
 
 2/ Then use the model to predict the price of a car given its mileage:
-```python
+```shell
 $> python3 price_prediction.py
 ```
 

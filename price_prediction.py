@@ -13,9 +13,12 @@ def main():
     # Load the theta values from the file
     if os.path.exists('theta.csv'):
         with open('theta.csv', 'r') as f:
-            theta0, theta1 = f.read().split(',')
-            theta0 = float(theta0)
-            theta1 = float(theta1)
+            try:
+                theta0, theta1 = f.read().split(',')
+                theta0 = float(theta0)
+                theta1 = float(theta1)
+            except ValueError:
+                sys.exit('theta.csv does not contain valid values')
 
     # Linear function type: y = ax + b
     price = theta0 + theta1 * float(x)
