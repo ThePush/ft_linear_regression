@@ -24,19 +24,29 @@ def sum_of_squared_errors(theta0: float, theta1: float, X: list, Y: list) -> flo
 
 def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
     '''Average squared error between predicted and actual values'''
+    return sum_of_squared_errors(theta0, theta1, X, Y) / (2 * len(X))
+
+
+def mean_squared_error(theta0: float, theta1: float, X: list, Y: list) -> float:
+    '''Mean squared error between predicted and actual values'''
     return sum_of_squared_errors(theta0, theta1, X, Y) / len(X)
 
 
 def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
     '''Update theta0 and theta1 using gradient descent algorithm'''
-    # Number of iterations to perform gradient descent
+    # Number of maximum iterations to perform gradient descent
     num_epochs = 100_000
     # Learning rate
-    L = .01
+    L = .035
+    # Variable for plotting and measures
     number_of_epochs = 0
+    thetas_history = []
     costs = []
+    mse = []
     for _ in range(num_epochs):
-        # Calculate the cost
+        # Store values for plotting
+        thetas_history.append((theta0, theta1))
+        mse.append(mean_squared_error(theta0, theta1, X, Y))
         costs.append(cost(theta0, theta1, X, Y))
         # Calculate the gradient for theta0 and theta1
         gradient0 = sum(2 * error(theta0, theta1, x_i, y_i)
@@ -44,16 +54,20 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
         gradient1 = sum(2 * error(theta0, theta1, x_i, y_i) * x_i
                         for x_i, y_i in zip(X, Y))
         # Update theta0 and theta1
-        previous_theta0 = theta0
-        previous_theta1 = theta1
         theta0 -= L * gradient0
         theta1 -= L * gradient1
         number_of_epochs += 1
-        # Stop if theta0 and theta1 have converged
-        if previous_theta0 == theta0 and previous_theta1 == theta1:
-            print(f'Number of epochs: {number_of_epochs}')
+        # Stop if:
+        # theta0 and theta1 have converged or
+        # if the previous cost is less than the current cost or
+        # if the previous cost is different than the current cost by less than 0.000001
+        if theta0 == thetas_history[-1][0] and theta1 == thetas_history[-1][1] or \
+            ((len(costs) > 1 and
+                (costs[-2] < costs[-1] or
+                 abs(costs[-2] - costs[-1]) < 0.000001))):
             break
-    return theta0, theta1, costs
+    print(f'Number of epochs: {number_of_epochs}')
+    return theta0, theta1, costs, mse, thetas_history
 
 
 def normalize_array(X: np.array) -> np.array:
@@ -70,7 +84,9 @@ def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) ->
     return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
 
-def plot_data(X: np.array, Y: np.array, theta0: float, theta1: float, x: np.array, y: np.array, costs: list):
+def plot_data(
+        X: np.array, Y: np.array, theta0: float, theta1: float, x: np.array, y: np.array,
+        costs: list, mse: list, thetas_history: list):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     # Plot raw data
     axes[0].set_title('Car price by mileage')
@@ -88,6 +104,16 @@ def plot_data(X: np.array, Y: np.array, theta0: float, theta1: float, x: np.arra
     axes[2].plot(costs)
     axes[2].set_xlabel('Epoch')
     axes[2].set_ylabel('Cost')
+    # Plot mean squared error in 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_title('Mean squared error')
+    ax.set_xlabel('theta0')
+    ax.set_ylabel('theta1')
+    ax.set_zlabel('Mean squared error')
+    ax.scatter([theta[0] for theta in thetas_history],
+               [theta[1] for theta in thetas_history], mse)
+
     plt.show()
 
 
@@ -104,12 +130,13 @@ def main():
     theta.append(.0)
     theta.append(.0)
     # Perform gradient descent
-    theta[0], theta[1], costs = gradient_descent(theta[0], theta[1], X, Y)
+    theta[0], theta[1], costs, mse, thetas_history = gradient_descent(
+        theta[0], theta[1], X, Y)
 
     # Print final values for theta0 and theta1 and plot data
     print(f'Cost: {cost(theta[0], theta[1], X, Y)}')
     plot_data(X, Y, theta[0], theta[1],
-              data['km'].values, data['price'].values, costs)
+              data['km'].values, data['price'].values, costs, mse, thetas_history)
 
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
