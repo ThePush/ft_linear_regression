@@ -8,16 +8,19 @@
 
 ## Usage:
 
-To generate the model:
+1/ To generate the model:
 ```python
 $> python3 model.py
 ```
+Output with training on current dataset:
 
-Then use the model to predict the price of a car given its mileage:
+![image](https://user-images.githubusercontent.com/91064070/213880936-5089c289-01ee-4bb9-9226-32f850f92318.png)
+
+2/ Then use the model to predict the price of a car given its mileage:
 ```python
 $> python3 price_prediction.py
 ```
 
-Example of output:
+Example of input/output:
 
 ![image](https://user-images.githubusercontent.com/91064070/213867002-d9fdd41b-69d4-42e8-b00f-902efd912e2c.png)

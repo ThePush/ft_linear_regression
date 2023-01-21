@@ -114,11 +114,11 @@ def plot_data(
     ax.set_zlabel('Mean squared error')
     ax.scatter([theta[0] for theta in thetas_history],
                [theta[1] for theta in thetas_history], mse)
-
     plt.show()
 
 
 def main():
+    '''Main function'''
     assert os.path.exists('data.csv'), sys.exit(
         'Please download data.csv from intra and place it in the same directory as this script')
     # Read dataset from csv file
@@ -133,15 +133,17 @@ def main():
     # Perform gradient descent
     theta[0], theta[1], costs, mse, thetas_history = gradient_descent(
         theta[0], theta[1], X, Y)
-
-    # Print final values for theta0 and theta1 and plot data
-    print(f'Cost: {cost(theta[0], theta[1], X, Y)}')
+    # Plot data
     plot_data(X, Y, theta[0], theta[1],
               data['km'].values, data['price'].values, costs, mse, thetas_history)
 
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
         theta[0], theta[1], data['km'].values, data['price'].values)
+    # Print final values for theta0 and theta1 and cost
+    print(f'Cost: {cost(theta[0], theta[1], X, Y)}')
+    print(f'theta0: {theta[0]}')
+    print(f'theta1: {theta[1]}')
     # Write theta0 and theta1 to csv file
     with open('theta.csv', 'w') as f:
         f.write(f'{theta[0]},{theta[1]}')
