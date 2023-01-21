@@ -120,13 +120,27 @@ def plot_data(
 
 def main():
     '''Main function'''
+    # Check if data.csv exists and is not empty
     assert os.path.exists('data.csv'), sys.exit(
         'Please download data.csv from intra and place it in the same directory as this script')
+    assert os.stat('data.csv').st_size != 0, sys.exit('File is empty')
+
     # Read dataset from csv file
     data = pd.read_csv('data.csv')
+    # Check if dataset is valid
+    try:
+        data['km'].values
+        data['price'].values
+        for x in data['km'].values:
+            float(x)
+        for y in data['price'].values:
+            float(y)
+    except Exception:
+        sys.exit('Invalid dataset')
+
+    # Normalize data to be between 0 and 1
     X = normalize_array(data['km'].values)
     Y = normalize_array(data['price'].values)
-
     # Initial values for theta0 and theta1
     theta = []
     theta.append(.0)

@@ -3,6 +3,7 @@ import sys
 
 
 def main():
+    '''Main function'''
     x = input('Enter a kilometer value: ')
     if not x.isdigit() or int(x) < 0:
         print('Invalid input, please enter a positive integer')
