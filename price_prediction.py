@@ -6,12 +6,10 @@ def main():
     '''Main function'''
     x = input('Enter a kilometer value: ')
     try:
-        if not x:
-            raise AssertionError
-        if not x.isnumeric() or float(x) < 0:
-            raise AssertionError
-    except AssertionError:
-        sys.exit('Please enter a valid kilometer value')
+        if not x or not x.isnumeric() or int(x) < 0:
+            raise ValueError('Please enter a valid value')
+    except ValueError as e:
+        sys.exit(e)
 
     # Initialize theta0 and theta1 that will be used to predict the price
     theta0, theta1 = .0, .0
