@@ -132,9 +132,15 @@ def plot_data(
 def main():
     '''Main function'''
     # Check if data.csv exists and is not empty
-    assert os.path.exists('data.csv'), sys.exit(
-        'Please download data.csv from intra and place it in the same directory as this script')
-    assert os.stat('data.csv').st_size != 0, sys.exit('File is empty')
+    try:
+        if not os.path.exists('data.csv'):
+            raise FileNotFoundError
+        if os.stat('data.csv').st_size == 0:
+            raise ValueError
+    except FileNotFoundError:
+        sys.exit('Please download data.csv from intra and place it in the same directory as this script')
+    except ValueError:
+        sys.exit('File is empty')
 
     # Read dataset from csv file
     data = pd.read_csv('data.csv')
