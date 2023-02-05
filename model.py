@@ -32,12 +32,26 @@ def find_best_learning_rate(X, Y):
     best_cost = float('inf')
     for current_learning_rate in np.arange(0.0001, 0.1, 0.0001):
         print(f'Learning rate: {current_learning_rate}')
-        theta0, theta1, costs, _ = gradient_descent(0, 0, X, Y, current_learning_rate)
+        theta0, theta1, costs, _ = gradient_descent(
+            0, 0, X, Y, current_learning_rate)
         if costs[-1] < best_cost:
             best_learning_rate = current_learning_rate
             best_cost = costs[-1]
     return best_learning_rate
 
+
+def normalize_array(X: np.array) -> np.array:
+    '''Normalize data to be between 0 and 1'''
+    return (X - X.min()) / (X.max() - X.min())
+
+
+def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
+    '''Denormalize theta0 and theta1'''
+    x_min = X.min()
+    x_max = X.max()
+    y_min = Y.min()
+    y_max = Y.max()
+    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
 
 def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float) -> tuple:
@@ -77,20 +91,6 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_ra
     print(f'Number of epochs: {number_of_epochs}')
     print(f'Cost: {costs[-1]}')
     return theta0, theta1, costs, thetas_history
-
-
-def normalize_array(X: np.array) -> np.array:
-    '''Normalize data to be between 0 and 1'''
-    return (X - X.min()) / (X.max() - X.min())
-
-
-def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
-    '''Denormalize theta0 and theta1'''
-    x_min = X.min()
-    x_max = X.max()
-    y_min = Y.min()
-    y_max = Y.max()
-    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
 
 def plot_data(
@@ -200,6 +200,7 @@ def main():
     # Print final values for theta0 and theta1
     print(f'theta0: {theta[0]}')
     print(f'theta1: {theta[1]}')
+    print(f'Accuracy: {100 - costs[-1] * 100}%')
     # Write theta0 and theta1 to csv file
     with open('theta.csv', 'w') as f:
         f.write(f'{theta[0]},{theta[1]}')
