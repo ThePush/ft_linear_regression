@@ -28,24 +28,22 @@ def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
 
 
 def find_best_learning_rate(X, Y):
-    best_L = 0
+    best_learning_rate = 0
     best_cost = float('inf')
-    for L in np.arange(0.0001, 0.1, 0.0001):
-        print(f'Learning rate: {L}')
-        theta0, theta1, costs, _ = gradient_descent(0, 0, X, Y, L)
+    for current_learning_rate in np.arange(0.0001, 0.1, 0.0001):
+        print(f'Learning rate: {current_learning_rate}')
+        theta0, theta1, costs, _ = gradient_descent(0, 0, X, Y, current_learning_rate)
         if costs[-1] < best_cost:
-            best_L = L
+            best_learning_rate = current_learning_rate
             best_cost = costs[-1]
-    return best_L
+    return best_learning_rate
 
 
 
-def gradient_descent(theta0: float, theta1: float, X: list, Y: list, L: float) -> tuple:
+def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float) -> tuple:
     '''Update theta0 and theta1 using gradient descent algorithm'''
     # Number of maximum iterations to perform gradient descent
     num_epochs = 100_000
-    # Learning rate
-    #L = .035
     # Variable for plotting and measures
     number_of_epochs = 0
     thetas_history = []
@@ -64,8 +62,8 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list, L: float) -
         gradient1 = sum(2 * error(theta0, theta1, x_i, y_i) * x_i
                         for x_i, y_i in zip(X, Y))
         # Update theta0 and theta1
-        theta0 -= L * gradient0
-        theta1 -= L * gradient1
+        theta0 -= learning_rate * gradient0
+        theta1 -= learning_rate * gradient1
         number_of_epochs += 1
         # Stop if:
         # theta0 and theta1 have converged or
@@ -77,7 +75,7 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list, L: float) -
                  abs(costs[-2] - costs[-1]) < 0.000001))):
             break
     print(f'Number of epochs: {number_of_epochs}')
-    print(f'Final cost: {costs[-1]}')
+    print(f'Cost: {costs[-1]}')
     return theta0, theta1, costs, thetas_history
 
 
@@ -102,12 +100,12 @@ def plot_data(
     # Plot raw data
     axes[0].set_title('Car price vs kilometers')
     axes[0].scatter(x, y)
-    axes[0].set_xlabel('m2')
+    axes[0].set_xlabel('km')
     axes[0].set_ylabel('price')
     # Plot standardized data and regression line
     axes[1].set_title('Standardized data and regression line')
     axes[1].scatter(X, Y)
-    axes[1].set_xlabel('m2')
+    axes[1].set_xlabel('km')
     axes[1].set_ylabel('price')
     axes[1].plot(X, [predict(theta0, theta1, x_i) for x_i in X], color='red')
     # Plot cost
@@ -164,9 +162,9 @@ def check_datafile():
 def check_dataset(dataset: pd.DataFrame):
     '''Check if dataset is valid'''
     try:
-        dataset['m2'].values
+        dataset['km'].values
         dataset['price'].values
-        for x in dataset['m2'].values:
+        for x in dataset['km'].values:
             float(x)
         for y in dataset['price'].values:
             float(y)
@@ -177,11 +175,11 @@ def check_dataset(dataset: pd.DataFrame):
 def main():
     '''Main function'''
     check_datafile()
-    data = pd.read_csv('houses_prices.csv')
+    data = pd.read_csv('data.csv')
     check_dataset(data)
 
     # Normalize data to be between 0 and 1
-    X = normalize_array(data['m2'].values)
+    X = normalize_array(data['km'].values)
     Y = normalize_array(data['price'].values)
     # Initial values for theta0 and theta1
     theta = []
@@ -189,16 +187,16 @@ def main():
     theta.append(.0)
     # Find best learning rate
     L = find_best_learning_rate(X, Y)
-    print(f'Best learning rate: {L}')
+    print(f'\nBest learning rate: {L}')
     # Perform gradient descent
     theta[0], theta[1], costs, thetas_history = gradient_descent(
         theta[0], theta[1], X, Y, L)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
-              data['m2'].values, data['price'].values, costs, thetas_history)
+              data['km'].values, data['price'].values, costs, thetas_history)
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
-        theta[0], theta[1], data['m2'].values, data['price'].values)
+        theta[0], theta[1], data['km'].values, data['price'].values)
     # Print final values for theta0 and theta1
     print(f'theta0: {theta[0]}')
     print(f'theta1: {theta[1]}')
