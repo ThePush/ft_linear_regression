@@ -27,12 +27,25 @@ def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
     return sum_of_squared_errors(theta0, theta1, X, Y) / (2 * len(X))
 
 
-def gradient_descent(theta0: float, theta1: float, X: list, Y: list) -> tuple:
+def find_best_learning_rate(X, Y):
+    best_L = 0
+    best_cost = float('inf')
+    for L in np.arange(0.0001, 0.1, 0.0001):
+        print(f'Learning rate: {L}')
+        theta0, theta1, costs, _ = gradient_descent(0, 0, X, Y, L)
+        if costs[-1] < best_cost:
+            best_L = L
+            best_cost = costs[-1]
+    return best_L
+
+
+
+def gradient_descent(theta0: float, theta1: float, X: list, Y: list, L: float) -> tuple:
     '''Update theta0 and theta1 using gradient descent algorithm'''
     # Number of maximum iterations to perform gradient descent
     num_epochs = 100_000
     # Learning rate
-    L = .035
+    #L = .035
     # Variable for plotting and measures
     number_of_epochs = 0
     thetas_history = []
@@ -89,12 +102,12 @@ def plot_data(
     # Plot raw data
     axes[0].set_title('Car price vs kilometers')
     axes[0].scatter(x, y)
-    axes[0].set_xlabel('km')
+    axes[0].set_xlabel('m2')
     axes[0].set_ylabel('price')
     # Plot standardized data and regression line
     axes[1].set_title('Standardized data and regression line')
     axes[1].scatter(X, Y)
-    axes[1].set_xlabel('km')
+    axes[1].set_xlabel('m2')
     axes[1].set_ylabel('price')
     axes[1].plot(X, [predict(theta0, theta1, x_i) for x_i in X], color='red')
     # Plot cost
@@ -110,8 +123,10 @@ def plot_data(
     ax.set_ylabel('theta1')
     ax.set_zlabel('Cost')
     # Find the range of theta0 and theta1 values that the theta descent path covers
-    theta0_min, theta0_max = min([x[0] for x in thetas_history])-.2, max([x[0] for x in thetas_history])+.2
-    theta1_min, theta1_max = min([x[1] for x in thetas_history])-.2, max([x[1] for x in thetas_history])+.2
+    theta0_min, theta0_max = min(
+        [x[0] for x in thetas_history])-.2, max([x[0] for x in thetas_history])+.2
+    theta1_min, theta1_max = min(
+        [x[1] for x in thetas_history])-.2, max([x[1] for x in thetas_history])+.2
     # Create a smaller meshgrid for the surface plot
     theta0_vals = np.linspace(theta0_min, theta0_max, 100)
     theta1_vals = np.linspace(theta1_min, theta1_max, 100)
@@ -123,55 +138,67 @@ def plot_data(
             theta = np.array([theta0_mesh[i, j], theta1_mesh[i, j]])
             cost_mesh[i, j] = cost(theta[0], theta[1], X, Y)
     # Plot the cost function surface
-    ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh, cmap='coolwarm', alpha=0.5)
-    ax.scatter([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, s=1, color='purple', alpha=1)
-    ax.plot([x[0] for x in thetas_history], [x[1] for x in thetas_history], costs, color='purple', alpha=1)
+    ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh,
+                    cmap='coolwarm', alpha=0.5)
+    ax.scatter([x[0] for x in thetas_history], [x[1]
+               for x in thetas_history], costs, s=1, color='purple', alpha=1)
+    ax.plot([x[0] for x in thetas_history], [x[1]
+            for x in thetas_history], costs, color='purple', alpha=1)
     plt.show()
 
 
-def main():
-    '''Main function'''
-    # Check if data.csv exists and is not empty
+def check_datafile():
+    '''Check if data.csv exists and is not empty'''
     try:
         if not os.path.exists('data.csv'):
             raise FileNotFoundError
         if os.stat('data.csv').st_size == 0:
             raise ValueError
     except FileNotFoundError:
-        sys.exit('Please download data.csv from intra and place it in the same directory as this script')
+        sys.exit(
+            'Please download data.csv from intra and place it in the same directory as this script')
     except ValueError:
         sys.exit('File is empty')
 
-    # Read dataset from csv file
-    data = pd.read_csv('data.csv')
-    # Check if dataset is valid
+
+def check_dataset(dataset: pd.DataFrame):
+    '''Check if dataset is valid'''
     try:
-        data['km'].values
-        data['price'].values
-        for x in data['km'].values:
+        dataset['m2'].values
+        dataset['price'].values
+        for x in dataset['m2'].values:
             float(x)
-        for y in data['price'].values:
+        for y in dataset['price'].values:
             float(y)
     except Exception:
         sys.exit('Invalid dataset')
 
+
+def main():
+    '''Main function'''
+    check_datafile()
+    data = pd.read_csv('houses_prices.csv')
+    check_dataset(data)
+
     # Normalize data to be between 0 and 1
-    X = normalize_array(data['km'].values)
+    X = normalize_array(data['m2'].values)
     Y = normalize_array(data['price'].values)
     # Initial values for theta0 and theta1
     theta = []
     theta.append(.0)
     theta.append(.0)
+    # Find best learning rate
+    L = find_best_learning_rate(X, Y)
+    print(f'Best learning rate: {L}')
     # Perform gradient descent
     theta[0], theta[1], costs, thetas_history = gradient_descent(
-        theta[0], theta[1], X, Y)
+        theta[0], theta[1], X, Y, L)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
-              data['km'].values, data['price'].values, costs, thetas_history)
-
+              data['m2'].values, data['price'].values, costs, thetas_history)
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
-        theta[0], theta[1], data['km'].values, data['price'].values)
+        theta[0], theta[1], data['m2'].values, data['price'].values)
     # Print final values for theta0 and theta1
     print(f'theta0: {theta[0]}')
     print(f'theta1: {theta[1]}')

@@ -23,7 +23,7 @@ def main():
             except ValueError:
                 sys.exit('theta.csv does not contain valid values')
 
-    # Linear function type: y = ax + b
+    # Linear function type: y = mx + b
     price = theta0 + theta1 * float(x)
     print(f'Predicted price: {price}')
 
