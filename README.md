@@ -24,3 +24,15 @@ $> python3 price_prediction.py
 Example of input/output:
 
 ![image](https://user-images.githubusercontent.com/91064070/216846997-d7bf4d3e-584c-416f-9f22-1bdd31298c6f.png)
+
+
+## Dataset:
+
+The dataset used for training is in the file [data.csv], you can generate another one using the [generate_dataset.py] script. It will generate a dataset with 50 rows and 2 columns, this time with houses surface as independant variable and their price as dependant variable.
+
+To use it, run:
+```shell
+$> python3 dataset_generator.py
+```
+
+You will have to modify the [model.py] file to use the new dataset. Replace 'km' by 'm2' in the [model.py] file, and replace 'data.csv'  by 'houses_prices.csv'.
