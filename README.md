@@ -14,7 +14,7 @@ $> python3 model.py
 ```
 Output with training on current dataset:
 
-![image](https://user-images.githubusercontent.com/91064070/216848511-613c5023-874b-4fba-8a4e-8fbfe14eea35.png)
+![image](https://user-images.githubusercontent.com/91064070/216848597-c44ec88b-e5ba-4547-86e6-53e34eec4d82.png)
 
 2/ Then use the model to predict the price of a car given its mileage:
 ```shell
