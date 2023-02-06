@@ -7,44 +7,82 @@ import sys
 
 # Model
 def predict(theta0: float, theta1: float, x_i: float) -> float:
-    '''Linear function of type y = ax + b'''
+    '''
+    Linear function of type y = mx + b.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    x_i: x, the input
+    '''
     return theta1 * x_i + theta0
 
 
 def error(theta0: float, theta1: float, x_i: float, y_i: float) -> float:
-    '''Difference between predicted and actual value'''
+    '''
+    Difference between predicted and actual value.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    x_i: x, the input
+    y_i: y, the actual value
+    '''
     return predict(theta0, theta1, x_i) - y_i
 
 
 def sum_of_squared_errors(theta0: float, theta1: float, X: list, Y: list) -> float:
-    '''Sum of squared errors between predicted and actual values'''
+    '''
+    Sum of squared errors between predicted and actual values.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    '''
     return sum(error(theta0, theta1, x_i, y_i) ** 2
                for x_i, y_i in zip(X, Y))
 
 
 def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
-    '''Average squared error between predicted and actual values'''
+    '''
+    Average squared error between predicted and actual values.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    '''
     return sum_of_squared_errors(theta0, theta1, X, Y) / (2 * len(X))
 
 
-def find_best_learning_rate(X, Y):
-    best_learning_rate = 0
+def find_best_learning_rate(X: list, Y: list) -> float:
+    '''
+    Find the best learning rate for gradient descent.
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    '''
+    best_learning_rate: float = 0
     best_cost = float('inf')
+    # Try all learning rates between 0.0001 and 0.1
     for current_learning_rate in np.arange(0.0001, 0.1, 0.0001):
-        theta0, theta1, costs, _ = gradient_descent(
+        _, _, costs, _, _ = gradient_descent(
             0, 0, X, Y, current_learning_rate, False)
         if costs[-1] < best_cost:
+            # Store the learning rate that gives the lowest cost
             best_learning_rate = current_learning_rate
             best_cost = costs[-1]
     return best_learning_rate
 
 
 def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = True) -> tuple:
-    '''Update theta0 and theta1 using gradient descent algorithm'''
+    '''
+    Update theta0 and theta1 using gradient descent algorithm.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    learning_rate: the learning rate
+    print_results: bool to know if the results should be printed
+    '''
     # Number of maximum iterations to perform gradient descent
     num_epochs = 100_000
     # Variable for plotting and measures
-    number_of_epochs = 0
+    number_of_epochs: int = 0
     thetas_history = []
     costs = []
 
@@ -75,24 +113,29 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_ra
             break
     print(f'Number of epochs: {number_of_epochs}') if print_results else None
     print(f'Cost: {costs[-1]}') if print_results else None
-    return theta0, theta1, costs, thetas_history
+    return theta0, theta1, costs, thetas_history, number_of_epochs
 
 
 # Plotting
 def plot_data(
         X: np.array, Y: np.array, theta0: float, theta1: float, x: np.array, y: np.array,
-        costs: list, thetas_history: list):
+        costs: list, thetas_history: list, first_col: str, second_col: str) -> None:
+    '''Plot:
+    1/ Raw data as a scatterplot
+    2/ Standardized data and regression line
+    3/ Cost evolution
+    '''
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     # Plot raw data
-    axes[0].set_title('Car price vs kilometers')
+    axes[0].set_title(second_col + ' vs ' + first_col)
     axes[0].scatter(x, y)
-    axes[0].set_xlabel('km')
-    axes[0].set_ylabel('price')
+    axes[0].set_xlabel(first_col)
+    axes[0].set_ylabel(second_col)
     # Plot standardized data and regression line
     axes[1].set_title('Standardized data and regression line')
     axes[1].scatter(X, Y)
-    axes[1].set_xlabel('km')
-    axes[1].set_ylabel('price')
+    axes[1].set_xlabel(first_col)
+    axes[1].set_ylabel(second_col)
     axes[1].plot(X, [predict(theta0, theta1, x_i) for x_i in X], color='red')
     # Plot cost
     axes[2].set_title('Cost evolution')
@@ -133,7 +176,7 @@ def plot_data(
 
 # Utils
 def correlation(x: pd.DataFrame, y: pd.DataFrame) -> float:
-    '''Calculate the Pearson correlation between two variables'''
+    '''Calculate the Pearson (linear) correlation between two variables.'''
     n = len(x)
     numerator = n * sum(x * y) - sum(x) * sum(y)
     denominator = ((n * sum(x**2) - sum(x)**2)**.5) * \
@@ -142,26 +185,14 @@ def correlation(x: pd.DataFrame, y: pd.DataFrame) -> float:
 
 
 def std_err_of_estimate(theta0: float, theta1: float, X: list, Y: list) -> float:
-    '''Standard error of estimate'''
+    '''
+    Standard error of estimate.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    '''
     return (sum_of_squared_errors(theta0, theta1, X, Y) / (len(X) - 2))**.5
-
-
-#def t_value(theta0: float, theta1: float, X: list, Y: list, x: float = None) -> float:
-#    '''T value'''
-#    if x is None:
-#        return (theta1 - 0) / (std_err_of_estimate(theta0, theta1, X, Y) / (sum((X - X.mean())**2) / len(X))**.5)
-#    else:
-#        return (theta1 - 0) / (std_err_of_estimate(theta0, theta1, X, Y) / (sum((X - X.mean())**2) / len(X) + (x - X.mean())**2)**.5)
-
-
-#def prediction_interval(theta0: float, theta1: float, X: list, Y: list, x: float) -> tuple:
-#    '''Prediction interval'''
-#    std_err = std_err_of_estimate(theta0, theta1, X, Y)
-#    t = t_value(theta0, theta1, X, Y, .975)
-#    n = len(X)
-#    margin_of_error = t * std_err * \
-#        ((1 + (1 / n) + (n*(x - X.mean())**2) / (n * sum((X**2) - (X.mean()**2)))))
-#    return predict(theta0, theta1, x) - margin_of_error, predict(theta0, theta1, x) + margin_of_error
 
 
 def normalize_array(X: np.array) -> np.array:
@@ -178,72 +209,88 @@ def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) ->
     return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
 
-def check_datafile():
-    '''Check if data.csv exists and is not empty'''
+def check_datafile(filename: str):
+    '''Check if <file.csv> exists and is not empty'''
     try:
-        if not os.path.exists('data.csv'):
+        if not os.path.exists(filename):
             raise FileNotFoundError
-        if os.stat('data.csv').st_size == 0:
+        if os.stat(filename).st_size == 0:
             raise ValueError
     except FileNotFoundError:
         sys.exit(
-            'Please download data.csv from intra and place it in the same directory as this script')
+            'Please provide ' + filename + ' in the same directory as this script')
     except ValueError:
-        sys.exit('File is empty')
+        sys.exit('File ' + filename + ' is empty')
 
 
 def check_dataset(dataset: pd.DataFrame):
     '''Check if dataset is valid'''
     try:
-        dataset['km'].values
-        dataset['price'].values
-        for x in dataset['km'].values:
-            float(x)
-        for y in dataset['price'].values:
-            float(y)
+        if len(dataset.columns) != 2:
+            raise Exception
+        if dataset.isnull().values.any():
+            raise Exception
+        for col in dataset.columns:
+            if not np.issubdtype(dataset[col].dtype, np.number):
+                raise Exception
     except Exception:
         sys.exit('Invalid dataset')
 
 
 def main():
-    '''Main function'''
-    check_datafile()
-    df = pd.read_csv('data.csv')
+    '''
+    A program that performs a linear regression on a dataset.
+    No external libraries are used.
+    Usage: python3 model.py <file.csv>
+    '''
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        sys.exit('Please provide a dataset <file.csv> as an argument')
+    check_datafile(filename)
+    df = pd.read_csv(filename)
+    df = df.dropna()
     check_dataset(df)
+    first_col = df.columns[0]
+    second_col = df.columns[1]
 
     # Normalize data to be between 0 and 1
-    X = normalize_array(df['km'].values)
-    Y = normalize_array(df['price'].values)
+    X = normalize_array(df[first_col].values)
+    Y = normalize_array(df[second_col].values)
     # Initial values for theta0 and theta1
     theta = []
     theta.append(.0)
     theta.append(.0)
     # Find best learning rate
     L = find_best_learning_rate(X, Y)
-    print(f'\nBest learning rate: {L}')
     # Perform gradient descent
-    theta[0], theta[1], costs, thetas_history = gradient_descent(
-        theta[0], theta[1], X, Y, L, True)
+    theta[0], theta[1], costs, thetas_history, n_epochs = gradient_descent(
+        theta[0], theta[1], X, Y, L, False)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
-              df['km'].values, df['price'].values, costs, thetas_history)
+              df[first_col].values, df[second_col].values, costs, thetas_history, first_col, second_col)
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
-        theta[0], theta[1], df['km'].values, df['price'].values)
-    # Print final values for theta0 and theta1
-    print(f'theta0: {theta[0]}')
-    print(f'theta1: {theta[1]}')
-    print(f'Accuracy(%): {100 - costs[-1] * 100}')
+        theta[0], theta[1], df[first_col].values, df[second_col].values)
+
+    # Print stats
+    print(f'LINEAR REGRESSION for dataset: {second_col} vs {first_col}')
+    print(f'\ttheta0: {theta[0]}')
+    print(f'\ttheta1: {theta[1]}')
+    print(f'\tMODEL: {second_col} = {theta[0]} + {theta[1]} * {first_col}')
+    print(f'\nPERFORMANCE:')
+    print(f'\tBest cost: {costs[-1]}')
+    print(f'\tBest learning rate: {L}')
+    print(f'\tNumber of epochs: {n_epochs}')
+    print(f'\tAccuracy(%): {100 - costs[-1] * 100}')
     print(
-        f'Pearson Correlation(-1,1): {correlation(df["km"].values, df["price"].values)}')
+        f'\tStandard error of the estimate(€): {std_err_of_estimate(theta[0], theta[1], df[first_col].values, df[second_col].values)}')
+    print(f'\nDATASET STATISTICS:')
     print(
-        f'Coefficient of determination(0,1): {correlation(df["km"].values, df["price"].values)**2}')
+        f'\tPearson Correlation(-1,1): {correlation(df[first_col].values, df[second_col].values)}')  # aka r
     print(
-        f'Standard error of the estimate(€): {std_err_of_estimate(theta[0], theta[1], df["km"].values, df["price"].values)}')
-    #print(
-    #    f'T-value: {t_value(theta[0], theta[1], df["km"].values, df["price"].values)}')
-    #print(
-    #    f'Prediction interval(€): {prediction_interval(theta[0], theta[1], df["km"].values, df["price"].values, 200000)}')
+        f'\tCoefficient of determination(0,1): {correlation(df[first_col].values, df[second_col].values)**2}')  # aka squared correlation or r^2
+
     # Write theta0 and theta1 to csv file
     with open('theta.csv', 'w') as f:
         f.write(f'{theta[0]},{theta[1]}')

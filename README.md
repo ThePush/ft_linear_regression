@@ -10,7 +10,7 @@
 
 1/ To generate the model and plot the results:
 ```shell
-$> python3 model.py
+$> python3 model.py <file.csv>
 ```
 Output with training on current dataset:
 
@@ -28,11 +28,9 @@ Example of input/output:
 
 ## Dataset:
 
-The dataset used for training is in the file [data.csv], you can generate another one using the [generate_dataset.py] script. It will generate a dataset with 50 rows and 2 columns, this time with houses surface as independant variable and their price as dependant variable.
+The dataset used for training is in the file [data.csv], you can generate another one using the [generate_dataset.py] script. It will generate a dataset with 50 rows and 2 columns.
 
 To use it, run:
 ```shell
-$> python3 dataset_generator.py
+$> python3 dataset_generator.py <filename> <number_of_rows>
 ```
-
-You will have to modify the [model.py] file to use the new dataset. Replace 'km' by 'm2' in the [model.py] file, and replace 'data.csv'  by 'houses_prices.csv'.
