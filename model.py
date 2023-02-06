@@ -31,30 +31,15 @@ def find_best_learning_rate(X, Y):
     best_learning_rate = 0
     best_cost = float('inf')
     for current_learning_rate in np.arange(0.0001, 0.1, 0.0001):
-        print(f'Learning rate: {current_learning_rate}')
         theta0, theta1, costs, _ = gradient_descent(
-            0, 0, X, Y, current_learning_rate)
+            0, 0, X, Y, current_learning_rate, False)
         if costs[-1] < best_cost:
             best_learning_rate = current_learning_rate
             best_cost = costs[-1]
     return best_learning_rate
 
 
-def normalize_array(X: np.array) -> np.array:
-    '''Normalize data to be between 0 and 1'''
-    return (X - X.min()) / (X.max() - X.min())
-
-
-def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
-    '''Denormalize theta0 and theta1'''
-    x_min = X.min()
-    x_max = X.max()
-    y_min = Y.min()
-    y_max = Y.max()
-    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
-
-
-def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float) -> tuple:
+def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = True) -> tuple:
     '''Update theta0 and theta1 using gradient descent algorithm'''
     # Number of maximum iterations to perform gradient descent
     num_epochs = 100_000
@@ -88,11 +73,12 @@ def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_ra
                 (costs[-2] < costs[-1] or
                  abs(costs[-2] - costs[-1]) < 0.000001))):
             break
-    print(f'Number of epochs: {number_of_epochs}')
-    print(f'Cost: {costs[-1]}')
+    print(f'Number of epochs: {number_of_epochs}') if print_results else None
+    print(f'Cost: {costs[-1]}') if print_results else None
     return theta0, theta1, costs, thetas_history
 
 
+# Plotting
 def plot_data(
         X: np.array, Y: np.array, theta0: float, theta1: float, x: np.array, y: np.array,
         costs: list, thetas_history: list):
@@ -145,6 +131,53 @@ def plot_data(
     plt.show()
 
 
+# Utils
+def correlation(x: pd.DataFrame, y: pd.DataFrame) -> float:
+    '''Calculate the Pearson correlation between two variables'''
+    n = len(x)
+    numerator = n * sum(x * y) - sum(x) * sum(y)
+    denominator = ((n * sum(x**2) - sum(x)**2)**.5) * \
+        ((n * sum(y**2) - sum(y)**2)**.5)
+    return numerator / denominator
+
+
+def std_err_of_estimate(theta0: float, theta1: float, X: list, Y: list) -> float:
+    '''Standard error of estimate'''
+    return (sum_of_squared_errors(theta0, theta1, X, Y) / (len(X) - 2))**.5
+
+
+#def t_value(theta0: float, theta1: float, X: list, Y: list, x: float = None) -> float:
+#    '''T value'''
+#    if x is None:
+#        return (theta1 - 0) / (std_err_of_estimate(theta0, theta1, X, Y) / (sum((X - X.mean())**2) / len(X))**.5)
+#    else:
+#        return (theta1 - 0) / (std_err_of_estimate(theta0, theta1, X, Y) / (sum((X - X.mean())**2) / len(X) + (x - X.mean())**2)**.5)
+
+
+#def prediction_interval(theta0: float, theta1: float, X: list, Y: list, x: float) -> tuple:
+#    '''Prediction interval'''
+#    std_err = std_err_of_estimate(theta0, theta1, X, Y)
+#    t = t_value(theta0, theta1, X, Y, .975)
+#    n = len(X)
+#    margin_of_error = t * std_err * \
+#        ((1 + (1 / n) + (n*(x - X.mean())**2) / (n * sum((X**2) - (X.mean()**2)))))
+#    return predict(theta0, theta1, x) - margin_of_error, predict(theta0, theta1, x) + margin_of_error
+
+
+def normalize_array(X: np.array) -> np.array:
+    '''Normalize data to be between 0 and 1'''
+    return (X - X.min()) / (X.max() - X.min())
+
+
+def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
+    '''Denormalize theta0 and theta1'''
+    x_min = X.min()
+    x_max = X.max()
+    y_min = Y.min()
+    y_max = Y.max()
+    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
+
+
 def check_datafile():
     '''Check if data.csv exists and is not empty'''
     try:
@@ -175,12 +208,12 @@ def check_dataset(dataset: pd.DataFrame):
 def main():
     '''Main function'''
     check_datafile()
-    data = pd.read_csv('data.csv')
-    check_dataset(data)
+    df = pd.read_csv('data.csv')
+    check_dataset(df)
 
     # Normalize data to be between 0 and 1
-    X = normalize_array(data['km'].values)
-    Y = normalize_array(data['price'].values)
+    X = normalize_array(df['km'].values)
+    Y = normalize_array(df['price'].values)
     # Initial values for theta0 and theta1
     theta = []
     theta.append(.0)
@@ -190,17 +223,27 @@ def main():
     print(f'\nBest learning rate: {L}')
     # Perform gradient descent
     theta[0], theta[1], costs, thetas_history = gradient_descent(
-        theta[0], theta[1], X, Y, L)
+        theta[0], theta[1], X, Y, L, True)
     # Plot data
     plot_data(X, Y, theta[0], theta[1],
-              data['km'].values, data['price'].values, costs, thetas_history)
+              df['km'].values, df['price'].values, costs, thetas_history)
     # Denormalize theta0 and theta1
     theta[0], theta[1] = denormalize_theta(
-        theta[0], theta[1], data['km'].values, data['price'].values)
+        theta[0], theta[1], df['km'].values, df['price'].values)
     # Print final values for theta0 and theta1
     print(f'theta0: {theta[0]}')
     print(f'theta1: {theta[1]}')
-    print(f'Accuracy: {100 - costs[-1] * 100}%')
+    print(f'Accuracy(%): {100 - costs[-1] * 100}')
+    print(
+        f'Pearson Correlation(-1,1): {correlation(df["km"].values, df["price"].values)}')
+    print(
+        f'Coefficient of determination(0,1): {correlation(df["km"].values, df["price"].values)**2}')
+    print(
+        f'Standard error of the estimate(€): {std_err_of_estimate(theta[0], theta[1], df["km"].values, df["price"].values)}')
+    #print(
+    #    f'T-value: {t_value(theta[0], theta[1], df["km"].values, df["price"].values)}')
+    #print(
+    #    f'Prediction interval(€): {prediction_interval(theta[0], theta[1], df["km"].values, df["price"].values, 200000)}')
     # Write theta0 and theta1 to csv file
     with open('theta.csv', 'w') as f:
         f.write(f'{theta[0]},{theta[1]}')
