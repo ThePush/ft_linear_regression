@@ -219,6 +219,17 @@ def sum_of_squared_errors(theta0: float, theta1: float, X: list, Y: list) -> flo
                for x_i, y_i in zip(X, Y))
 
 
+def mean_squared_error(theta0: float, theta1: float, X: list, Y: list) -> float:
+    '''
+    Mean squared error between predicted and actual values.
+    theta0: b, the y-intercept
+    theta1: m, the slope
+    X: list of x, the inputs
+    Y: list of y, the actual values
+    '''
+    return sum_of_squared_errors(theta0, theta1, X, Y) / len(X)
+
+
 def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
     '''
     Average squared error between predicted and actual values.
