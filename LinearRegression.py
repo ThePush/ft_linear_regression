@@ -8,7 +8,7 @@ import ml_toolkit as ml
 class LinearRegression:
     '''
     A class that performs a linear regression on a dataset.
-    No external libraries are used.
+    No machine learning libraries are used.
 
     Parameters:
         dataset_path (str): path to the dataset
@@ -26,6 +26,14 @@ class LinearRegression:
         df (DataFrame): DataFrame of the dataset
         X (list): list of normalized x values
         Y (list): list of normalized y values
+
+    Methods:
+        check_dataset(df): check if the dataset is valid
+        find_best_learning_rate(X, Y): find the best learning rate for gradient descent
+        gradient_descent(theta0, theta1, X, Y, learning_rate): perform gradient descent
+        save_thetas(): save thetas in a file named "thetas.csv"
+        plot_data(): plot the data
+        print_stats(): print the stats
     '''
 
     def __init__(self, dataset_path: str):
@@ -86,7 +94,8 @@ class LinearRegression:
                 self.learning_rate = current_learning_rate
                 best_cost = costs[-1]
 
-    def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
+    @staticmethod
+    def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
         '''
         Perform gradient descent.
 
@@ -201,7 +210,8 @@ class LinearRegression:
                 for x in self.thetas_history], self.costs, color='purple', alpha=1)
         plt.show()
 
-    def denormalize_theta(self, theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
+    @staticmethod
+    def denormalize_theta(theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
         '''
         Denormalize theta0 and theta1
 
@@ -220,7 +230,8 @@ class LinearRegression:
         y_max = Y.max()
         return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
-    def check_dataset(self, df: pd.DataFrame) -> None:
+    @staticmethod
+    def check_dataset(df: pd.DataFrame) -> None:
         '''Check if dataset is two columns of numbers with no null values.'''
         if len(df.columns) != 2:
             raise Exception('Dataset must have two columns')
