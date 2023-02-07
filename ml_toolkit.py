@@ -268,3 +268,19 @@ def check_datafile(filename: str):
     if os.stat(filename).st_size == 0:
         raise ValueError('File ' + filename + ' is empty')
 
+
+def check_csv(self, filepath: str):
+    '''Check if csv is two columns of numbers with no null values'''
+    line_num = 0
+    with open(filepath, 'r') as file:
+        for line in file:
+            line_num += 1
+            values = line.strip().split(',')
+            if len(values) != 2:
+                raise Exception(f'Dataset must have two columns at line {line_num}')
+            if any([value == '' for value in values]):
+                raise Exception(f'Dataset must not have null values at line {line_num}')
+            try:
+                values = [float(value) for value in values]
+            except ValueError:
+                raise Exception(f'Dataset must contain only numbers at line {line_num}')

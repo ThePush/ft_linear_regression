@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
 import sys
 import ml_toolkit as ml
 
@@ -31,7 +30,7 @@ class LinearRegression:
             sys.exit('Please provide a dataset <file.csv> as an argument')
         ml.check_datafile(filename)
         self.df = pd.read_csv(filename)
-        #self.df = self.df.dropna()
+        self.df = self.df.dropna()
         self.check_dataset(self.df)
         self.first_col = self.df.columns[0]
         self.second_col = self.df.columns[1]
@@ -123,7 +122,8 @@ class LinearRegression:
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         # Plot raw data
         axes[0].set_title(self.second_col + ' vs ' + self.first_col)
-        axes[0].scatter(self.df[self.first_col].values, self.df[self.second_col].values)
+        axes[0].scatter(self.df[self.first_col].values,
+                        self.df[self.second_col].values)
         axes[0].set_xlabel(self.first_col)
         axes[0].set_ylabel(self.second_col)
         # Plot standardized data and regression line
@@ -164,7 +164,7 @@ class LinearRegression:
         ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh,
                         cmap='coolwarm', alpha=0.5)
         ax.scatter([x[0] for x in self.thetas_history], [x[1]
-                                                    for x in self.thetas_history], self.costs, s=1, color='purple', alpha=1)
+                                                         for x in self.thetas_history], self.costs, s=1, color='purple', alpha=1)
         ax.plot([x[0] for x in self.thetas_history], [x[1]
                 for x in self.thetas_history], self.costs, color='purple', alpha=1)
         plt.show()
@@ -201,7 +201,9 @@ class LinearRegression:
         print(f'\tNumber of epochs: {self.n_epochs}')
         print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(
-            f'\tStandard error of the estimate: {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
+            f'\tStandard error of the estimate(0,1): {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
+        print(
+            f'\tStandard error of the estimate(dependent variable): {ml.std_err_of_estimate(self.theta[0], self.theta[1], self.df[self.first_col], self.df[self.second_col])}')
         print(f'\nDATASET STATISTICS:')
         print(
             f'\tPearson Correlation(-1,1): {ml.correlation(self.X, self.Y)}')  # aka r
