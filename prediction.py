@@ -30,7 +30,7 @@ def main():
 
     # Linear function type: y = mx + b
     price = theta0 + theta1 * float(x)
-    print(f'Predicted dependent value(€): {price}')
+    print(f'Predicted dependent value: {price}')
 
 
 if __name__ == '__main__':

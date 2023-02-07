@@ -18,7 +18,7 @@ def generate_dataset(filename: str, n_rows: int, theta0: float, theta1: float):
         for i in range(n_rows):
             independent_value = random.randint(0, 250000)
             dependent_value = theta0 + theta1 * independent_value
-            dependent_value += random.uniform(-867, 867)
+            dependent_value += random.uniform(-1500, 1500)
             writer.writerow([independent_value, int(dependent_value)])
 
 
