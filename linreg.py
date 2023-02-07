@@ -24,7 +24,15 @@ def print_help() -> None:
 
 
 def parse_user_input() -> dict:
-    '''Parse user input and return a dictionary of options.'''
+    '''
+    Parse user input and return a dictionary of options.
+
+    Args:
+        None
+
+    Returns:
+        A dictionary of options.
+    '''
     if len(sys.argv) < 2:
         sys.exit('Usage: python3 linreg.py <dataset_path> [-p, plot] [-s, stats] [-h, help]')
     if sys.argv[1].startswith('-'):

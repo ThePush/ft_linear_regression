@@ -9,6 +9,23 @@ class LinearRegression:
     '''
     A class that performs a linear regression on a dataset.
     No external libraries are used.
+
+    Args:
+        dataset_path (str): path to the dataset
+
+    Attributes:
+        dataset_path (str): path to the dataset
+        learning_rate (float): learning rate for gradient descent
+        n_epochs (int): number of epochs for gradient descent
+        theta (list): list of theta0 and theta1
+        normalized_theta (list): list of normalized theta0 and theta1
+        costs (list): list of costs for each epoch
+        thetas_history (list): list of thetas for each epoch
+        first_col (str): name of the first column
+        second_col (str): name of the second column
+        df (DataFrame): DataFrame of the dataset
+        X (list): list of normalized x values
+        Y (list): list of normalized y values
     '''
 
     def __init__(self, dataset_path: str):
@@ -52,11 +69,13 @@ class LinearRegression:
         self.theta[0], self.theta[1] = self.denormalize_theta(
             self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
-    def find_best_learning_rate(self, X: list, Y: list):
+    def find_best_learning_rate(self, X: list, Y: list) -> None:
         '''
         Find the best learning rate for gradient descent.
-        X: list of x, the inputs
-        Y: list of y, the actual values
+
+        Args:
+            X (list): list of x, the inputs
+            Y (list): list of y, the actual values
         '''
         best_cost = float('inf')
         # Try all learning rates between 0.0001 and 0.1
@@ -70,13 +89,22 @@ class LinearRegression:
 
     def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
         '''
-        Update theta0 and theta1 using gradient descent algorithm.
-        theta0: b, the y-intercept
-        theta1: m, the slope
-        X: list of x, the inputs
-        Y: list of y, the actual values
-        learning_rate: the learning rate
-        print_results: bool to know if the results should be printed
+        Perform gradient descent.
+
+        Args:
+            theta0 (float): b, the y-intercept
+            theta1 (float): m, the slope
+            X (list): list of x, the inputs
+            Y (list): list of y, the actual values
+            learning_rate (float): the learning rate
+            print_results (bool, optional): whether to print the results or not
+
+        Returns:
+            theta0 (float): b, the y-intercept
+            theta1 (float): m, the slope
+            costs (list): list of costs
+            thetas_history (list): list of tuples of theta0 and theta1
+            n_epochs (int): number of epochs
         '''
         # Number of maximum iterations to perform gradient descent
         num_epochs = 100_000
@@ -114,11 +142,15 @@ class LinearRegression:
         return theta0, theta1, costs, thetas_history, number_of_epochs
 
     def plot_data(self) -> None:
-        '''Plot:
-        1/ Raw data as a scatterplot
-        2/ Standardized data and regression line
-        3/ Cost evolution
-        4/ Visualize the gradient descent algorithm in 3d with theta0, theta1 and cost function
+        '''
+        Plot:
+            • Raw data as a scatterplot
+
+            • Standardized data and regression line
+
+            • Cost evolution
+
+            • Visualization of the gradient descent algorithm in 3d with theta0, theta1 and cost function
         '''
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         # Plot raw data
@@ -171,7 +203,18 @@ class LinearRegression:
         plt.show()
 
     def denormalize_theta(self, theta0: float, theta1: float, X: np.array, Y: np.array) -> tuple:
-        '''Denormalize theta0 and theta1'''
+        '''
+        Denormalize theta0 and theta1
+
+        Args:
+            theta0 (float): Normalized theta0
+            theta1 (float): Normalized theta1
+            X (np.array): X values
+            Y (np.array): Y values
+
+        Returns:
+            theta0, theta1 (tuple): Denormalized theta0 and theta1
+        '''
         x_min = X.min()
         x_max = X.max()
         y_min = Y.min()
@@ -179,7 +222,7 @@ class LinearRegression:
         return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
     def check_dataset(self, dataset: pd.DataFrame) -> None:
-        '''Check if dataset is two columns of numbers with no null values'''
+        '''Check if dataset is two columns of numbers with no null values.'''
         if len(dataset.columns) != 2:
             raise Exception('Dataset must have two columns')
         if dataset.isnull().values.any():
@@ -189,7 +232,12 @@ class LinearRegression:
                 raise Exception('Dataset must contain only numbers')
 
     def print_stats(self) -> None:
-        '''Print stats about the linear regression and dataset'''
+        '''
+        Print stats about the linear regression and dataset.
+
+        Args:
+            None
+        '''
         print(
             f'LINEAR REGRESSION for dataset: {self.second_col} vs {self.first_col}')
         print(f'\ttheta0: {self.theta[0]}')
@@ -197,7 +245,8 @@ class LinearRegression:
         print(
             f'\tMODEL: {self.second_col} = {self.theta[0]} + {self.theta[1]} * {self.first_col}')
         print(f'\nMODEL PERFORMANCE:')
-        print(f'\tMean squared error: {ml.mean_squared_error(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
+        print(
+            f'\tMean squared error: {ml.mean_squared_error(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
         print(f'\tCost: {self.costs[-1]}')
         print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(f'\tLearning rate: {self.learning_rate}')
@@ -213,6 +262,13 @@ class LinearRegression:
             f'\tCoefficient of determination(0,1): {ml.r_squared(self.X, self.Y)}')  # aka r^2
 
     def save_thetas(self, filename: str = 'theta.csv') -> None:
-        '''Write theta0 and theta1 to a csv file'''
+        '''
+        Write theta0 and theta1 to a csv file.
+
+        Arg(optional):
+            filename (str): Name of the file to write to. Default is 'theta.csv'
+        '''
+        if not filename.endswith('.csv'):
+            filename += '.csv'
         with open(filename, 'w') as f:
             f.write(f'{self.theta[0]},{self.theta[1]}')

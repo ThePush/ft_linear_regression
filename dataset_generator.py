@@ -5,11 +5,15 @@ import numpy as np
 import os
 
 
-def generate_dataset(filename: str, n_rows: int, theta0: float, theta1: float):
+def generate_dataset(filename: str, n_rows: int, theta0: float, theta1: float) -> None:
     '''
     Generate dataset of 2 column with random uniform data.
-    filename: str, name of the file to save the dataset
-    n_rows: int, number of rows to generate
+
+    Args:
+    filename (str): name of the file to generate
+    n_rows (int): number of rows to generate
+    theta0 (float): intercept of the linear regression
+    theta1 (float): slope of the linear regression
     '''
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -25,7 +29,9 @@ def generate_dataset(filename: str, n_rows: int, theta0: float, theta1: float):
 def parse_user_input(argv: list):
     '''
     Parse user input and return the filename and number of rows to generate.
-    argv: list, list of arguments passed to the script
+
+    Args:
+    argv (list): list of arguments passed to the program
     '''
     try:
         filename = argv[1]
