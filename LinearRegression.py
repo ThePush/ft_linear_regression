@@ -287,7 +287,7 @@ class LinearRegression:
         '''
         Write theta0 and theta1 to a csv file.
 
-        Arg(optional):
+        Parameters (optional):
             filename (str): Name of the file to write to. Default is 'theta.csv'
 
         Returns:
