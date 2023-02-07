@@ -1,4 +1,4 @@
-## Linear Regression: Predicting dependant variables from independant variables
+## Linear Regression: Predicting dependent variables from independent variables
 
 
 ![image](https://user-images.githubusercontent.com/91064070/213888620-6b488e8f-0164-4655-a442-af6fe28b1bb3.png)
@@ -7,6 +7,8 @@
 
 
 ## Usage:
+
+![image](https://user-images.githubusercontent.com/91064070/217234438-dbcb4473-bef4-44d6-8efb-eee9a3378c30.png)
 
 1/ To generate the model and plot the results:
 ```shell
