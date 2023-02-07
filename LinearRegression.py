@@ -196,12 +196,12 @@ class LinearRegression:
         print(f'\ttheta1: {self.theta[1]}')
         print(
             f'\tMODEL: {self.second_col} = {self.theta[0]} + {self.theta[1]} * {self.first_col}')
-        print(f'\nPERFORMANCE:')
+        print(f'\nMODEL PERFORMANCE:')
         print(f'\tMean squared error: {ml.mean_squared_error(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
         print(f'\tCost: {self.costs[-1]}')
+        print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(f'\tLearning rate: {self.learning_rate}')
         print(f'\tNumber of epochs: {self.n_epochs}')
-        print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(
             f'\tStandard error of the estimate(0,1): {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
         print(
