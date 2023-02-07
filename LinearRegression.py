@@ -8,7 +8,7 @@ import ml_toolkit as ml
 class LinearRegression:
     '''
     A class that performs a linear regression on a dataset.
-    No machine learning libraries are used.
+    No machine learning or math libraries are used but mines.
 
     Parameters:
         dataset_path (str): path to the dataset
@@ -83,6 +83,9 @@ class LinearRegression:
         Parameters:
             X (list): list of x, the inputs
             Y (list): list of y, the actual values
+
+        Returns:
+            None
         '''
         best_cost = float('inf')
         # Try all learning rates between 0.0001 and 0.1
@@ -159,6 +162,12 @@ class LinearRegression:
             • Cost evolution
 
             • Visualization of the gradient descent algorithm in 3d with theta0, theta1 and cost function
+
+        Parameters:
+            None
+
+        Returns:
+            None
         '''
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         # Plot raw data
@@ -247,6 +256,9 @@ class LinearRegression:
 
         Parameters:
             None
+
+        Returns:
+            None
         '''
         print(
             f'LINEAR REGRESSION for dataset: {self.second_col} vs {self.first_col}')
@@ -277,6 +289,9 @@ class LinearRegression:
 
         Arg(optional):
             filename (str): Name of the file to write to. Default is 'theta.csv'
+
+        Returns:
+            None
         '''
         if not filename.endswith('.csv'):
             filename += '.csv'
