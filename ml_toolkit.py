@@ -242,8 +242,6 @@ def correlation(x: pd.DataFrame, y: pd.DataFrame) -> float:
 def r_squared(X: list, Y: list) -> float:
     '''
     R-squared coefficient of determination.
-    theta0: b, the y-intercept
-    theta1: m, the slope
     X: list of x, the inputs
     Y: list of y, the actual values
     '''

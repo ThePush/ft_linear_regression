@@ -201,12 +201,12 @@ class LinearRegression:
         print(f'\tNumber of epochs: {self.n_epochs}')
         print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(
-            f'\tStandard error of the estimate: {ml.std_err_of_estimate(self.theta[0], self.theta[1], self.df[self.first_col].values, self.df[self.second_col].values)}')
+            f'\tStandard error of the estimate: {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
         print(f'\nDATASET STATISTICS:')
         print(
-            f'\tPearson Correlation(-1,1): {ml.correlation(self.df[self.first_col].values, self.df[self.second_col].values)}')  # aka r
+            f'\tPearson Correlation(-1,1): {ml.correlation(self.X, self.Y)}')  # aka r
         print(
-            f'\tCoefficient of determination(0,1): {ml.r_squared(self.df[self.first_col].values, self.df[self.second_col].values)}')  # aka r^2
+            f'\tCoefficient of determination(0,1): {ml.r_squared(self.X, self.Y)}')  # aka r^2
 
     def save_thetas(self, filename: str = 'theta.csv') -> None:
         '''Write theta0 and theta1 to a csv file'''
