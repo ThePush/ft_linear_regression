@@ -37,7 +37,7 @@ def parse_user_input() -> dict:
             concatenated_options = ''.join([c for c in stripped_arg if c in options])
             if len(concatenated_options) != len(stripped_arg):
                 invalid_options = [c for c in stripped_arg if c not in options]
-                print(f'Invalid option(s): {",".join(invalid_options)}')
+                print(f'Invalid option(s): {", ".join(invalid_options)}')
             for option in concatenated_options:
                 options[option] = True
         else:

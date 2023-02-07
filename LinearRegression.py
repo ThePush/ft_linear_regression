@@ -26,8 +26,8 @@ class LinearRegression:
         self.Y = []
         try:
             filename = self.dataset_path
-        except IndexError:
-            sys.exit('Please provide a dataset <file.csv> as an argument')
+        except Exception as e:
+            sys.exit(e)
         ml.check_datafile(filename)
         self.df = pd.read_csv(filename)
         self.df = self.df.dropna()
@@ -52,7 +52,7 @@ class LinearRegression:
         self.theta[0], self.theta[1] = self.denormalize_theta(
             self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
-    def find_best_learning_rate(self, X: list, Y: list) -> float:
+    def find_best_learning_rate(self, X: list, Y: list):
         '''
         Find the best learning rate for gradient descent.
         X: list of x, the inputs
@@ -68,7 +68,7 @@ class LinearRegression:
                 self.learning_rate = current_learning_rate
                 best_cost = costs[-1]
 
-    def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False) -> tuple:
+    def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
         '''
         Update theta0 and theta1 using gradient descent algorithm.
         theta0: b, the y-intercept
@@ -118,6 +118,7 @@ class LinearRegression:
         1/ Raw data as a scatterplot
         2/ Standardized data and regression line
         3/ Cost evolution
+        4/ Visualize the gradient descent algorithm in 3d with theta0, theta1 and cost function
         '''
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         # Plot raw data
@@ -177,7 +178,7 @@ class LinearRegression:
         y_max = Y.max()
         return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
-    def check_dataset(self, dataset: pd.DataFrame):
+    def check_dataset(self, dataset: pd.DataFrame) -> None:
         '''Check if dataset is two columns of numbers with no null values'''
         if len(dataset.columns) != 2:
             raise Exception('Dataset must have two columns')
