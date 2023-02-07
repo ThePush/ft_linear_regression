@@ -27,7 +27,7 @@ def parse_user_input() -> dict:
     '''
     Parse user input and return a dictionary of options.
 
-    Args:
+    Parameters:
         None
 
     Returns:

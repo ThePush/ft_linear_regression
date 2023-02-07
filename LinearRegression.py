@@ -10,7 +10,7 @@ class LinearRegression:
     A class that performs a linear regression on a dataset.
     No external libraries are used.
 
-    Args:
+    Parameters:
         dataset_path (str): path to the dataset
 
     Attributes:
@@ -47,7 +47,6 @@ class LinearRegression:
             sys.exit(e)
         ml.check_datafile(filename)
         self.df = pd.read_csv(filename)
-        self.df = self.df.dropna()
         self.check_dataset(self.df)
         self.first_col = self.df.columns[0]
         self.second_col = self.df.columns[1]
@@ -73,7 +72,7 @@ class LinearRegression:
         '''
         Find the best learning rate for gradient descent.
 
-        Args:
+        Parameters:
             X (list): list of x, the inputs
             Y (list): list of y, the actual values
         '''
@@ -91,7 +90,7 @@ class LinearRegression:
         '''
         Perform gradient descent.
 
-        Args:
+        Parameters:
             theta0 (float): b, the y-intercept
             theta1 (float): m, the slope
             X (list): list of x, the inputs
@@ -206,7 +205,7 @@ class LinearRegression:
         '''
         Denormalize theta0 and theta1
 
-        Args:
+        Parameters:
             theta0 (float): Normalized theta0
             theta1 (float): Normalized theta1
             X (np.array): X values
@@ -221,21 +220,21 @@ class LinearRegression:
         y_max = Y.max()
         return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
-    def check_dataset(self, dataset: pd.DataFrame) -> None:
+    def check_dataset(self, df: pd.DataFrame) -> None:
         '''Check if dataset is two columns of numbers with no null values.'''
-        if len(dataset.columns) != 2:
+        if len(df.columns) != 2:
             raise Exception('Dataset must have two columns')
-        if dataset.isnull().values.any():
+        if df.isnull().values.any():
             raise Exception('Dataset must not have null values')
-        for col in dataset.columns:
-            if not np.issubdtype(dataset[col].dtype, np.number):
-                raise Exception('Dataset must contain only numbers')
+        for col in df.columns:
+            if not np.issubdtype(df[col].dtype, np.number):
+                raise Exception(f'Column {col} is not numeric')
 
     def print_stats(self) -> None:
         '''
         Print stats about the linear regression and dataset.
 
-        Args:
+        Parameters:
             None
         '''
         print(

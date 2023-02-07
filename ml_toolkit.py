@@ -10,7 +10,7 @@ def count(x: list) -> int:
     returns the number of elements as an integer, otherwise None if x is an empty
     list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -27,7 +27,7 @@ def mean(x: list) -> float:
     The method returns the mean as a float, otherwise None if x is an empty list or
     array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -43,7 +43,7 @@ def median(x: list) -> float:
     Computes the median of a given non-empty list or array x. The method
     returns the median as a float, otherwise None if x is an empty list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -64,7 +64,7 @@ def quartile(x: list) -> tuple:
     The method returns the quartile as a float, otherwise None if x is an empty list or
     array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -80,7 +80,7 @@ def var(x: list) -> float:
     loop. The method returns the variance as a float, otherwise None if x is
     an empty list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -98,7 +98,7 @@ def std_var(x: list) -> float:
     using a for-loop. The method returns the standard deviation as a float, otherwise
     None if x is an empty list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -114,7 +114,7 @@ def is_numeric(x: str) -> bool:
     Checks if a given string x is numeric. The method returns True if x is
     numeric, otherwise False.
 
-    Args:
+    Parameters:
         x (str): string to check
 
     Returns:
@@ -133,7 +133,7 @@ def max(x: list) -> float:
     loop. The method returns the maximum as a float, otherwise None if x is an empty
     list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -154,7 +154,7 @@ def min(x: list) -> float:
     loop. The method returns the minimum as a float, otherwise None if x is an empty
     list or array.
 
-    Args:
+    Parameters:
         x (list): list or array of elements
 
     Returns:
@@ -169,12 +169,12 @@ def min(x: list) -> float:
     return _min
 
 
-def drop_missing_rows(data: pd.DataFrame) -> pd.DataFrame:
+def drop_na(data: pd.DataFrame) -> pd.DataFrame:
     '''
     Removes rows with missing values from a DataFrame by keeping only
     the rows where the mask is False (no missing values).
 
-    Args:
+    Parameters:
         data (pd.DataFrame): DataFrame to clean
 
     Returns:
@@ -189,7 +189,7 @@ def drop_non_numeric_columns(data: pd.DataFrame) -> pd.DataFrame:
     '''
     Removes columns that do not contain numerical values from a DataFrame.
 
-    Args:
+    Parameters:
         data (pd.DataFrame): DataFrame to clean
 
 
@@ -207,11 +207,24 @@ def drop_non_numeric_columns(data: pd.DataFrame) -> pd.DataFrame:
     return clean_data[numeric_columns]
 
 
+def drop_non_numeric_rows(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Removes rows that do not contain numerical values from a DataFrame.
+
+    Parameters:
+        data (pd.DataFrame): DataFrame to clean
+
+    Returns:
+        pd.DataFrame: DataFrame with non-numeric rows removed
+    '''
+    return df[~df.applymap(lambda x: not is_numeric(x)).any(axis=1)]
+
+
 def drop_column_by_name(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
     '''
     Removes a column from a DataFrame by its name.
 
-    Args:
+    Parameters:
         data (pd.DataFrame): DataFrame to clean
         column_name (str): name of the column to remove
 
@@ -228,7 +241,7 @@ def clean_dataset(data, column_name):
     '''
     Cleans a dataset by removing missing rows, non-numeric columns and a given column.
 
-    Args:
+    Parameters:
         data (pd.DataFrame): DataFrame to clean
         column_name (str): name of the column to remove
 
@@ -236,7 +249,7 @@ def clean_dataset(data, column_name):
         pd.DataFrame: DataFrame with missing rows, non-numeric columns and given column removed
     '''
     data = drop_column_by_name(data, column_name)
-    data = drop_missing_rows(data)
+    data = drop_na(data)
     data = drop_non_numeric_columns(data)
     return data
 
@@ -245,7 +258,7 @@ def check_file(filename: str) -> bool:
     '''
     Checks if a file exists, is a CSV file and is not empty.
 
-    Args:
+    Parameters:
         filename (str): name of the file to check
 
     Returns:
@@ -264,7 +277,7 @@ def normalize_array(X: np.array) -> np.array:
     '''
     Normalize np.array data to be between 0 and 1.
 
-    Args:
+    Parameters:
         X (np.array): array to normalize
 
     Returns:
@@ -277,7 +290,7 @@ def normalize_df(data: pd.DataFrame) -> pd.DataFrame:
     '''
     Normalizes the values of a DataFrame between 0 and 1.
 
-    Args:
+    Parameters:
         data (pd.DataFrame): DataFrame to normalize
 
     Returns:
@@ -294,7 +307,7 @@ def normalize_column(column: pd.Series) -> pd.Series:
     '''
     Normalizes the values of a pd.Series column between 0 and 1.
 
-    Args:
+    Parameters:
         column (pd.Series): column to normalize
 
     Returns:
@@ -310,7 +323,7 @@ def predict(theta0: float, theta1: float, x_i: float) -> float:
     '''
     Linear function of type y = mx + b.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         x_i (float): x, the input
@@ -325,7 +338,7 @@ def error(theta0: float, theta1: float, x_i: float, y_i: float) -> float:
     '''
     Difference between predicted and actual value.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         x_i (float): x, the input
@@ -341,7 +354,7 @@ def sum_of_squared_errors(theta0: float, theta1: float, X: list, Y: list) -> flo
     '''
     Sum of squared errors between predicted and actual values.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         X (list): list of x, the inputs
@@ -358,7 +371,7 @@ def mean_squared_error(theta0: float, theta1: float, X: list, Y: list) -> float:
     '''
     Mean squared error between predicted and actual values.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         X (list): list of x, the inputs
@@ -374,7 +387,7 @@ def cost(theta0: float, theta1: float, X: list, Y: list) -> float:
     '''
     Average squared error between predicted and actual values.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         X (list): list of x, the inputs
@@ -390,7 +403,7 @@ def correlation(x: pd.DataFrame, y: pd.DataFrame) -> float:
     '''
     Calculate the Pearson (linear) correlation between two variables.
 
-    Args:
+    Parameters:
         x (pd.DataFrame): first variable
         y (pd.DataFrame): second variable
 
@@ -408,7 +421,7 @@ def r_squared(X: list, Y: list) -> float:
     '''
     R-squared coefficient of determination.
 
-    Args:
+    Parameters:
         X (list): first variable
         Y (list): second variable
 
@@ -422,7 +435,7 @@ def std_err_of_estimate(theta0: float, theta1: float, X: list, Y: list) -> float
     '''
     Standard error of estimate.
 
-    Args:
+    Parameters:
         theta0 (float): b, the y-intercept
         theta1 (float): m, the slope
         X (list): list of x, the inputs
@@ -436,9 +449,9 @@ def std_err_of_estimate(theta0: float, theta1: float, X: list, Y: list) -> float
 
 def check_datafile(filename: str) -> None:
     '''
-    Check if filename is a exists and is a none empty .csv file.
+    Check if filename exists and is a non empty .csv file.
 
-    Args:
+    Parameters:
         filename (str): name of file to check
 
     Raises:
@@ -454,11 +467,31 @@ def check_datafile(filename: str) -> None:
         raise ValueError('File ' + filename + ' is empty')
 
 
+def drop_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Delete duplicate rows from a pandas dataframe.
+
+    Parameters:
+        pd_df (pd.DataFrame): pandas dataframe
+
+    Returns:
+        pd.DataFrame: pandas dataframe with duplicate rows deleted
+    '''
+    result = []
+    seen = set()
+    for row in df.itertuples(index=False):
+        key = tuple(row)
+        if key not in seen:
+            result.append(row)
+            seen.add(key)
+    return pd.DataFrame(result, columns=df.columns)
+
+
 def check_csv(self, filepath: str):
     '''
     Check if csv is two columns of numbers with no null values.
 
-    Args:
+    Parameters:
         filepath (str): path to csv file
 
     Raises:
