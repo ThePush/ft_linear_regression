@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import sys
 import srcs.ml_toolkit as ml
+from tqdm import tqdm
 
 
 class LinearRegression:
@@ -75,15 +76,17 @@ class LinearRegression:
         Returns:
             None
         '''
+        print('Finding the best learning rate...')
         best_cost = float('inf')
         # Try all learning rates between 0.0001 and 0.1
-        for current_learning_rate in np.arange(0.0001, 0.1, 0.0001):
+        for current_learning_rate in tqdm(np.arange(0.0001, 0.1, 0.0001), total=999):
             _, _, costs, _, _ = self.gradient_descent(
                 0, 0, X, Y, current_learning_rate)
             if costs[-1] < best_cost:
                 # Store the learning rate that gives the lowest cost
                 self.learning_rate = current_learning_rate
                 best_cost = costs[-1]
+        print(f'Best learning rate: {self.learning_rate}')
 
     def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
         '''
@@ -105,7 +108,6 @@ class LinearRegression:
             n_epochs (int): number of epochs
         '''
         # Variable for plotting and measures
-        number_of_epochs: int = 0
         thetas_history = []
         costs = []
         # Create a matrix to store thetas
@@ -114,7 +116,7 @@ class LinearRegression:
         X = np.array(X, dtype=np.float64)
         Y = np.array(Y, dtype=np.float64)
         # Core of the gradient descent algorithm
-        for _ in range(self.n_epochs):
+        for i in range(self.n_epochs):
             # Store values for plotting
             thetas_history.append((thetas[0], thetas[1]))
             costs.append(ml.cost(thetas[0], thetas[1], X, Y))
@@ -125,7 +127,8 @@ class LinearRegression:
                 [2 * np.sum(errors), 2 * np.dot(errors, X)], dtype=np.float64)
             # Update thetas using vectorization
             thetas -= learning_rate * gradient
-            number_of_epochs += 1
+            print(
+                f'Epoch: {i + 1}\nCost: {costs[-1]}') if print_results else None
             # Stop if:
             # thetas have converged or
             # if the previous cost is less than the current cost or
@@ -134,15 +137,12 @@ class LinearRegression:
                     ((len(costs) > 1 and (costs[-2] < costs[-1] or
                                           abs(costs[-2] - costs[-1]) < 0.000001))):
                 break
-        print(
-            f'Number of epochs: {number_of_epochs}') if print_results else None
-        print(f'Cost: {costs[-1]}') if print_results else None
-        return thetas[0], thetas[1], costs, thetas_history, number_of_epochs
+        return thetas[0], thetas[1], costs, thetas_history, i
 
     def fit(self):
         self.find_best_learning_rate(self.X, self.Y)
         self.normalized_theta[0], self.normalized_theta[1], self.costs, self.thetas_history, self.n_epochs = self.gradient_descent(
-            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate)
+            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate, True)
         self.theta[0], self.theta[1] = self.denormalize_theta(
             self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
