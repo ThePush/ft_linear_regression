@@ -60,12 +60,13 @@ def main():
     '''
     options = parse_user_input()
     try:
-        lr = LinearRegression(sys.argv[1])
-        lr.save_thetas()
+        model = LinearRegression(sys.argv[1])
+        model.fit()
+        model.save_thetas()
         if options['p']:
-            lr.plot_data()
+            model.plot_data()
         if options['s']:
-            lr.print_stats()
+            model.print_stats()
         if options['h']:
             print_help()
     except Exception as e:

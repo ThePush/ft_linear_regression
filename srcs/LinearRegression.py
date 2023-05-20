@@ -36,10 +36,10 @@ class LinearRegression:
         print_stats(): print the stats
     '''
 
-    def __init__(self, dataset_path: str):
+    def __init__(self, dataset_path: str, n_epochs: int = 1000):
         self.dataset_path: str = dataset_path
         self.learning_rate: float = 0
-        self.n_epochs: int = 0
+        self.n_epochs: int = n_epochs
         self.theta = []
         self.normalized_theta = []
         self.costs = []
@@ -65,16 +65,6 @@ class LinearRegression:
         # Initial values for theta0 and theta1
         self.normalized_theta.append(.0)
         self.normalized_theta.append(.0)
-        # Find best learning rate
-        self.find_best_learning_rate(self.X, self.Y)
-        # Save best stats
-        self.normalized_theta[0], self.normalized_theta[1], self.costs, self.thetas_history, self.n_epochs = self.gradient_descent(
-            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate)
-        # Denormalize theta0 and theta1
-        self.theta.append(.0)
-        self.theta.append(.0)
-        self.theta[0], self.theta[1] = self.denormalize_theta(
-            self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
     def find_best_learning_rate(self, X: list, Y: list) -> None:
         '''
@@ -97,8 +87,7 @@ class LinearRegression:
                 self.learning_rate = current_learning_rate
                 best_cost = costs[-1]
 
-    @staticmethod
-    def gradient_descent(theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
+    def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
         '''
         Perform gradient descent.
 
@@ -117,41 +106,52 @@ class LinearRegression:
             thetas_history (list): list of tuples of theta0 and theta1
             n_epochs (int): number of epochs
         '''
-        # Number of maximum iterations to perform gradient descent
-        num_epochs = 100_000
         # Variable for plotting and measures
         number_of_epochs: int = 0
         thetas_history = []
         costs = []
+        # Create a matrix to store thetas
+        thetas = np.array([theta0, theta1], dtype=np.float64)
+        # Convert X and Y to NumPy arrays for vectorized operations
+        X = np.array(X, dtype=np.float64)
+        Y = np.array(Y, dtype=np.float64)
         # Core of the gradient descent algorithm
-        for _ in range(num_epochs):
+        for _ in range(self.n_epochs):
             # Store values for plotting
-            thetas_history.append((theta0, theta1))
-            costs.append(ml.cost(theta0, theta1, X, Y))
+            thetas_history.append((thetas[0], thetas[1]))
+            costs.append(ml.cost(thetas[0], thetas[1], X, Y))
             # Calculate the gradient for theta0 and theta1
             # The gradient is the partial derivative of the sum of squared errors
-            gradient0, gradient1 = 0, 0
-            for x_i, y_i in zip(X, Y):
-                error = ml.error(theta0, theta1, x_i, y_i)
-                gradient0 += 2 * error
-                gradient1 += 2 * error * x_i
-            # Update theta0 and theta1
-            theta0 -= learning_rate * gradient0
-            theta1 -= learning_rate * gradient1
+            errors = ml.error(thetas[0], thetas[1], X, Y)
+            gradient = np.array(
+                [2 * np.sum(errors), 2 * np.dot(errors, X)], dtype=np.float64)
+            # Update thetas using vectorization
+            thetas -= learning_rate * gradient
             number_of_epochs += 1
             # Stop if:
-            # theta0 and theta1 have converged or
+            # thetas have converged or
             # if the previous cost is less than the current cost or
             # if the previous cost is different than the current cost by less than 0.000001
-            if theta0 == thetas_history[-1][0] and theta1 == thetas_history[-1][1] or \
-                ((len(costs) > 1 and
-                    (costs[-2] < costs[-1] or
-                     abs(costs[-2] - costs[-1]) < 0.000001))):
+            if np.allclose(thetas, thetas_history[-1]) or \
+                    ((len(costs) > 1 and (costs[-2] < costs[-1] or
+                                          abs(costs[-2] - costs[-1]) < 0.000001))):
                 break
         print(
             f'Number of epochs: {number_of_epochs}') if print_results else None
         print(f'Cost: {costs[-1]}') if print_results else None
-        return theta0, theta1, costs, thetas_history, number_of_epochs
+        return thetas[0], thetas[1], costs, thetas_history, number_of_epochs
+
+    def fit(self):
+        # Find best learning rate
+        self.find_best_learning_rate(self.X, self.Y)
+        # Save best stats
+        self.normalized_theta[0], self.normalized_theta[1], self.costs, self.thetas_history, self.n_epochs = self.gradient_descent(
+            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate)
+        # Denormalize theta0 and theta1
+        self.theta.append(.0)
+        self.theta.append(.0)
+        self.theta[0], self.theta[1] = self.denormalize_theta(
+            self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
     def plot_data(self) -> None:
         '''
