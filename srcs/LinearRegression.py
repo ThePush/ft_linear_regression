@@ -14,7 +14,7 @@ class LinearRegression:
         dataset_path (str): path to the dataset
 
     Attributes:
-        dataset_path (str): path to the dataset
+        filename (str): path to the dataset
         learning_rate (float): learning rate for gradient descent
         n_epochs (int): number of epochs for gradient descent
         theta (list): list of theta0 and theta1
@@ -31,38 +31,36 @@ class LinearRegression:
         check_dataset(df): check if the dataset is valid
         find_best_learning_rate(X, Y): find the best learning rate for gradient descent
         gradient_descent(theta0, theta1, X, Y, learning_rate): perform gradient descent
+        fit(): fit the model
         save_thetas(): save thetas in a file named "thetas.csv"
         plot_data(): plot the data
         print_stats(): print the stats
     '''
 
-    def __init__(self, dataset_path: str, n_epochs: int = 1000):
-        self.dataset_path: str = dataset_path
+    def __init__(self, filename: str, n_epochs: int = 1000):
+        try:
+            assert isinstance(
+                filename, str), 'filename must be a string'
+            assert isinstance(n_epochs, int), 'n_epochs must be an integer'
+            assert n_epochs > 0, 'n_epochs must be greater than 0'
+            ml.check_datafile(filename)
+            self.df = pd.read_csv(filename)
+            self.check_dataset(self.df)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
         self.learning_rate: float = 0
         self.n_epochs: int = n_epochs
-        self.theta = []
-        self.normalized_theta = []
-        self.costs = []
-        self.thetas_history = []
-        self.first_col = ''
-        self.second_col = ''
-        self.df = pd.DataFrame()
-        self.X = []
-        self.Y = []
-        try:
-            filename = self.dataset_path
-        except Exception as e:
-            sys.exit(e)
-        ml.check_datafile(filename)
-        self.df = pd.read_csv(filename)
-        self.check_dataset(self.df)
         self.first_col = self.df.columns[0]
         self.second_col = self.df.columns[1]
 
-        # Normalize data to be between 0 and 1
         self.X = ml.normalize_array(self.df[self.first_col].values)
         self.Y = ml.normalize_array(self.df[self.second_col].values)
-        # Initial values for theta0 and theta1
+        self.theta = []
+        self.theta.append(.0)
+        self.theta.append(.0)
+        self.normalized_theta = []
         self.normalized_theta.append(.0)
         self.normalized_theta.append(.0)
 
@@ -142,14 +140,9 @@ class LinearRegression:
         return thetas[0], thetas[1], costs, thetas_history, number_of_epochs
 
     def fit(self):
-        # Find best learning rate
         self.find_best_learning_rate(self.X, self.Y)
-        # Save best stats
         self.normalized_theta[0], self.normalized_theta[1], self.costs, self.thetas_history, self.n_epochs = self.gradient_descent(
             self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate)
-        # Denormalize theta0 and theta1
-        self.theta.append(.0)
-        self.theta.append(.0)
         self.theta[0], self.theta[1] = self.denormalize_theta(
             self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
 
