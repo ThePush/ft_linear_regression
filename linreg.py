@@ -1,5 +1,5 @@
 import sys
-from LinearRegression import LinearRegression
+from srcs.LinearRegression import LinearRegression
 
 
 def print_help() -> None:

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sys
-import ml_toolkit as ml
+import srcs.ml_toolkit as ml
 
 
 class LinearRegression:
@@ -130,10 +130,11 @@ class LinearRegression:
             costs.append(ml.cost(theta0, theta1, X, Y))
             # Calculate the gradient for theta0 and theta1
             # The gradient is the partial derivative of the sum of squared errors
-            gradient0 = sum(2 * ml.error(theta0, theta1, x_i, y_i)
-                            for x_i, y_i in zip(X, Y))
-            gradient1 = sum(2 * ml.error(theta0, theta1, x_i, y_i) * x_i
-                            for x_i, y_i in zip(X, Y))
+            gradient0, gradient1 = 0, 0
+            for x_i, y_i in zip(X, Y):
+                error = ml.error(theta0, theta1, x_i, y_i)
+                gradient0 += 2 * error
+                gradient1 += 2 * error * x_i
             # Update theta0 and theta1
             theta0 -= learning_rate * gradient0
             theta1 -= learning_rate * gradient1
