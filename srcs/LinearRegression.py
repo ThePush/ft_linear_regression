@@ -137,7 +137,7 @@ class LinearRegression:
                     ((len(costs) > 1 and (costs[-2] < costs[-1] or
                                           abs(costs[-2] - costs[-1]) < 0.000001))):
                 break
-        return thetas[0], thetas[1], costs, thetas_history, i
+        return thetas[0], thetas[1], costs, thetas_history, i+1
 
     def fit(self):
         self.find_best_learning_rate(self.X, self.Y)
