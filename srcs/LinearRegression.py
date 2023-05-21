@@ -20,7 +20,6 @@ class LinearRegression:
         n_epochs (int): number of epochs for gradient descent
         theta (list): list of theta0 and theta1
         normalized_theta (list): list of normalized theta0 and theta1
-        costs (list): list of costs for each epoch
         thetas_history (list): list of thetas for each epoch
         first_col (str): name of the first column
         second_col (str): name of the second column
@@ -56,8 +55,10 @@ class LinearRegression:
         self.first_col = self.df.columns[0]
         self.second_col = self.df.columns[1]
 
-        self.X = ml.normalize_array(self.df[self.first_col].values)
-        self.Y = ml.normalize_array(self.df[self.second_col].values)
+        self.X = self.df[self.first_col].to_numpy()
+        self.Y = self.df[self.second_col].to_numpy()
+        self.X_norm = ml.normalize_array(self.X)
+        self.Y_norm = ml.normalize_array(self.Y)
         self.theta = []
         self.theta.append(.0)
         self.theta.append(.0)
@@ -137,11 +138,11 @@ class LinearRegression:
         return thetas[0], thetas[1], costs, thetas_history, i+1
 
     def fit(self):
-        self.find_best_learning_rate(self.X, self.Y)
+        self.find_best_learning_rate(self.X_norm, self.Y_norm)
         self.normalized_theta[0], self.normalized_theta[1], self.costs, self.thetas_history, self.n_epochs = self.gradient_descent(
-            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y, self.learning_rate, True)
+            self.normalized_theta[0], self.normalized_theta[1], self.X_norm, self.Y_norm, self.learning_rate, True)
         self.theta[0], self.theta[1] = self.denormalize_theta(
-            self.normalized_theta[0], self.normalized_theta[1], self.df[self.first_col].values, self.df[self.second_col].values)
+            self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)
 
     def plot_data(self) -> None:
         '''
@@ -163,17 +164,17 @@ class LinearRegression:
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         # Plot raw data
         axes[0].set_title(self.second_col + ' vs ' + self.first_col)
-        axes[0].scatter(self.df[self.first_col].values,
-                        self.df[self.second_col].values)
+        axes[0].scatter(self.X,
+                        self.Y)
         axes[0].set_xlabel(self.first_col)
         axes[0].set_ylabel(self.second_col)
         # Plot standardized data and regression line
         axes[1].set_title('Standardized data and regression line')
-        axes[1].scatter(self.X, self.Y)
+        axes[1].scatter(self.X_norm, self.Y_norm)
         axes[1].set_xlabel(self.first_col)
         axes[1].set_ylabel(self.second_col)
-        axes[1].plot(self.X, [ml.predict(self.normalized_theta[0], self.normalized_theta[1], x_i)
-                     for x_i in self.X], color='red')
+        axes[1].plot(self.X_norm, [ml.predict(self.normalized_theta[0], self.normalized_theta[1], x_i)
+                     for x_i in self.X_norm], color='red')
         # Plot cost
         axes[2].set_title('Cost evolution')
         axes[2].plot(self.costs)
@@ -200,7 +201,7 @@ class LinearRegression:
         for i in range(theta0_mesh.shape[0]):
             for j in range(theta0_mesh.shape[1]):
                 theta = np.array([theta0_mesh[i, j], theta1_mesh[i, j]])
-                cost_mesh[i, j] = ml.cost(theta[0], theta[1], self.X, self.Y)
+                cost_mesh[i, j] = ml.cost(theta[0], theta[1], self.X_norm, self.Y_norm)
         # Plot the cost function surface
         ax.plot_surface(theta0_mesh, theta1_mesh, cost_mesh,
                         cmap='coolwarm', alpha=0.5)
@@ -259,20 +260,20 @@ class LinearRegression:
             f'\tMODEL: {self.second_col} = {self.theta[0]} + {self.theta[1]} * {self.first_col}')
         print(f'\nMODEL PERFORMANCE:')
         print(
-            f'\tMean squared error: {ml.mean_squared_error(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
+            f'\tMean squared error: {ml.mean_squared_error(self.normalized_theta[0], self.normalized_theta[1], self.X_norm, self.Y_norm)}')
         print(f'\tCost: {self.costs[-1]}')
         print(f'\tAccuracy(%): {100 - self.costs[-1] * 100}')
         print(f'\tLearning rate: {self.learning_rate}')
         print(f'\tNumber of epochs: {self.n_epochs}')
         print(
-            f'\tStandard error of the estimate(0,1): {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X, self.Y)}')
+            f'\tStandard error of the estimate(0,1): {ml.std_err_of_estimate(self.normalized_theta[0], self.normalized_theta[1], self.X_norm, self.Y_norm)}')
         print(
-            f'\tStandard error of the estimate(dependent variable): {ml.std_err_of_estimate(self.theta[0], self.theta[1], self.df[self.first_col], self.df[self.second_col])}')
+            f'\tStandard error of the estimate(dependent variable): {ml.std_err_of_estimate(self.theta[0], self.theta[1], self.X, self.Y)}')
         print(f'\nDATASET STATISTICS:')
         print(
-            f'\tPearson Correlation(-1,1): {ml.correlation(self.X, self.Y)}')  # aka r
+            f'\tPearson Correlation(-1,1): {ml.correlation(self.X_norm, self.Y_norm)}')  # aka r
         print(
-            f'\tCoefficient of determination(0,1): {ml.r_squared(self.X, self.Y)}')  # aka r^2
+            f'\tCoefficient of determination(0,1): {ml.r_squared(self.X_norm, self.Y_norm)}')  # aka r^2
 
     def save_thetas(self, filename: str = 'theta.csv') -> None:
         '''
