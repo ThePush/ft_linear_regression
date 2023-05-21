@@ -25,8 +25,8 @@ class LinearRegression:
         first_col (str): name of the first column
         second_col (str): name of the second column
         df (DataFrame): DataFrame of the dataset
-        X (list): list of normalized x values
-        Y (list): list of normalized y values
+        X (np.ndarray): list of x, the inputs
+        Y (np.ndarray): list of y, the actual values
 
     Methods:
         check_dataset(df): check if the dataset is valid
@@ -65,13 +65,13 @@ class LinearRegression:
         self.normalized_theta.append(.0)
         self.normalized_theta.append(.0)
 
-    def find_best_learning_rate(self, X: list, Y: list) -> None:
+    def find_best_learning_rate(self, X: np.ndarray, Y: np.ndarray) -> None:
         '''
         Find the best learning rate for gradient descent.
 
         Parameters:
-            X (list): list of x, the inputs
-            Y (list): list of y, the actual values
+            X (np.ndarray): list of x, the inputs
+            Y (np.ndarray): list of y, the actual values
 
         Returns:
             None
@@ -88,15 +88,15 @@ class LinearRegression:
                 best_cost = costs[-1]
         print(f'Best learning rate: {self.learning_rate}')
 
-    def gradient_descent(self, theta0: float, theta1: float, X: list, Y: list, learning_rate: float, print_results: bool = False):
+    def gradient_descent(self, theta0: float, theta1: float, X: np.ndarray, Y: np.ndarray, learning_rate: float, print_results: bool = False):
         '''
         Perform gradient descent.
 
         Parameters:
             theta0 (float): b, the y-intercept
             theta1 (float): m, the slope
-            X (list): list of x, the inputs
-            Y (list): list of y, the actual values
+            X (np.ndarray): list of x, the inputs
+            Y (np.ndarray): list of y, the actual values
             learning_rate (float): the learning rate
             print_results (bool, optional): whether to print the results or not
 
@@ -112,9 +112,6 @@ class LinearRegression:
         costs = []
         # Create a matrix to store thetas
         thetas = np.array([theta0, theta1], dtype=np.float64)
-        # Convert X and Y to NumPy arrays for vectorized operations
-        X = np.array(X, dtype=np.float64)
-        Y = np.array(Y, dtype=np.float64)
         # Core of the gradient descent algorithm
         for i in range(self.n_epochs):
             # Store values for plotting
